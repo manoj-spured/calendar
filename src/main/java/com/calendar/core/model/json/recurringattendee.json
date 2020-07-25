@@ -1,0 +1,23 @@
+[
+  {
+    "id": 1,
+    "recurringEntityId": 201,
+    "attendee": 1,
+    "acceptanceStatus": "ACCEPTED",
+    "eventNote": "Test note"
+  },
+  {
+    "id": 2,
+    "recurringEntityId": 202,
+    "attendee": 2,
+    "acceptanceStatus": "ACCEPTED",
+    "eventNote": "Test note"
+  },
+  {
+    "id": 3,
+    "recurringEntityId": 203,
+    "attendee": 3,
+    "acceptanceStatus": "ACCEPTED",
+    "eventNote": "Test note"
+  }
+]

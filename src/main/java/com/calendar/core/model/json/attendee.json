@@ -1,0 +1,46 @@
+[
+  {
+    "id": 1,
+    "eventType": 201,
+    "entityId": 3001,
+    "eventNote": " Test Event Note 1",
+    "acceptanceStatus": "ACCEPTED",
+    "responseStatus": "SUBMITTED",
+    "score": " 104",
+    "startTime":"2020-07-21 09:01:15.0",
+    "endTime":"2020-07-28 09:01:15.0"
+  },
+  {
+    "id": 2,
+    "eventType": 202,
+    "entityId": 3002,
+    "eventNote": " Test Event Note 2",
+    "acceptanceStatus": "ACCEPTED",
+    "responseStatus": "SUBMITTED",
+    "score": " 140",
+    "startTime":"2020-07-27 09:01:15.0",
+    "endTime":"2020-07-29 09:01:15.0"
+  },
+  {
+    "id": 3,
+    "eventType": 203,
+    "entityId": 3003,
+    "eventNote": " Test Event Note 3",
+    "acceptanceStatus": "ACCEPTED",
+    "responseStatus": "SUBMITTED",
+    "score": " 120",
+    "startTime":"2020-07-20 09:01:15.0",
+    "endTime":"2020-07-22 09:01:15.0"
+  },
+  {
+    "id": 4,
+    "eventType": 204,
+    "entityId": 3004,
+    "eventNote": " Test Event Note 4",
+    "acceptanceStatus": "ACCEPTED",
+    "responseStatus": "SUBMITTED",
+    "score": " 120",
+    "startTime":"2020-07-20 09:01:15.0",
+    "endTime":"2020-07-29 09:01:15.0"
+  }
+]

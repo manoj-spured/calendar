@@ -1,0 +1,26 @@
+[
+  {
+    "id": 1,
+    "recurringEntityId": 201,
+    "entityId": 3001,
+    "startTimestamp": " ",
+    "startEndstamp": " ",
+    "status": "PUBLISHED"
+  },
+  {
+    "id": 2,
+    "recurringEntityId": 202,
+    "entityId": 3002,
+    "startTimestamp": " ",
+    "startEndstamp": " ",
+    "status": "PUBLISHED"
+  },
+  {
+    "id": 3,
+    "recurringEntityId": 203,
+    "entityId": 3003,
+    "startTimestamp": " ",
+    "startEndstamp": " ",
+    "status": "PUBLISHED"
+  }
+]
