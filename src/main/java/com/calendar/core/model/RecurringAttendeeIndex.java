@@ -15,23 +15,23 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "recurring_attendee_index")
 @SequenceGenerator(name="seq", initialValue=100000, allocationSize=10)
-public class RecurringAttendeeIndex extends GenericItem {
+public class RecurringAttendeeIndex {
 
     private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy= GenerationType.SEQUENCE, generator="seq")
-    String id;
+    Long id;
     Long recurringEntityId;
     Long attendee;
     AcceptanceStatus acceptanceStatus;
     String eventNote;
 
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

@@ -25,7 +25,7 @@ public interface CalendarIndexService {
 
     void saveRecurringIndices(List<RecurringIndex> recurringIndexList);
 
-    Iterable<AttendeeIndex> findAllAttendees(String attendeeId, Long startTime, Long endTime);
+    Iterable<AttendeeIndex> findAllAttendees(Long attendeeId, Long startTime, Long endTime);
 
     EventIndex findEvent(Long entityId);
 

@@ -1,5 +1,9 @@
 package com.calendar.core.service;
 
+import com.calendar.core.jparepository.AttendeeIndexJPARepository;
+import com.calendar.core.jparepository.EventIndexJPARepository;
+import com.calendar.core.jparepository.RecurringAttendeeIndexJPARepository;
+import com.calendar.core.jparepository.RecurringIndexJPARepository;
 import com.calendar.core.model.AttendeeIndex;
 import com.calendar.core.model.EventIndex;
 import com.calendar.core.model.RecurringAttendeeIndex;
@@ -9,6 +13,7 @@ import com.calendar.core.repository.EventIndexRepository;
 import com.calendar.core.repository.RecurringAttendeeIndexRepository;
 import com.calendar.core.repository.RecurringIndexRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +30,17 @@ public class CalendarIndexServiceImpl implements CalendarIndexService {
     RecurringAttendeeIndexRepository recurringAttendeeIndexRepository;
     @Autowired
     RecurringIndexRepository recurringIndexRepository;
+    @Autowired
+    AttendeeIndexJPARepository attendeeIndexJPARepository;
+    @Autowired
+    EventIndexJPARepository eventIndexJPARepository;
+    @Autowired
+    RecurringIndexJPARepository recurringIndexJPARepository;
+    @Autowired
+    RecurringAttendeeIndexJPARepository recurringAttendeeIndexJPARepository;
+
+    @Value("${useElasticSearch}")
+    private boolean useElasticSearch;
 
     @Override
     public Iterable<AttendeeIndex> findAllAttendees() {
@@ -33,7 +49,11 @@ public class CalendarIndexServiceImpl implements CalendarIndexService {
 
     @Override
     public void saveAttendees(List<AttendeeIndex> attendeeIndexList) {
-        attendeeIndexRepository.saveAll(attendeeIndexList);
+        if(useElasticSearch) {
+            attendeeIndexRepository.saveAll(attendeeIndexList);
+        } else {
+            attendeeIndexJPARepository.saveAll(attendeeIndexList);
+        }
     }
 
     @Override
@@ -43,7 +63,11 @@ public class CalendarIndexServiceImpl implements CalendarIndexService {
 
     @Override
     public void saveEvents(List<EventIndex> eventIndexList) {
-        eventIndexRepository.saveAll(eventIndexList);
+        if(useElasticSearch) {
+            eventIndexRepository.saveAll(eventIndexList);
+        } else {
+            eventIndexJPARepository.saveAll(eventIndexList);
+        }
     }
 
     @Override
@@ -53,7 +77,11 @@ public class CalendarIndexServiceImpl implements CalendarIndexService {
 
     @Override
     public void saveRecurringAttendees(List<RecurringAttendeeIndex> recurringAttendeeIndexList) {
-        recurringAttendeeIndexRepository.saveAll(recurringAttendeeIndexList);
+        if(useElasticSearch) {
+            recurringAttendeeIndexRepository.saveAll(recurringAttendeeIndexList);
+        } else {
+            recurringAttendeeIndexJPARepository.saveAll(recurringAttendeeIndexList);
+        }
     }
 
     @Override
@@ -63,27 +91,47 @@ public class CalendarIndexServiceImpl implements CalendarIndexService {
 
     @Override
     public void saveRecurringIndices(List<RecurringIndex> recurringIndexList) {
-        recurringIndexRepository.saveAll(recurringIndexList);
+        if(useElasticSearch) {
+            recurringIndexRepository.saveAll(recurringIndexList);
+        } else {
+            recurringIndexJPARepository.saveAll(recurringIndexList);
+        }
     }
 
     @Override
-    public Iterable<AttendeeIndex> findAllAttendees(String attendeeId, Long startTime, Long endTime) {
+    public Iterable<AttendeeIndex> findAllAttendees(Long attendeeId, Long startTime, Long endTime) {
 
-        return attendeeIndexRepository.findByIdAndStartTimeAndEndTime(attendeeId, startTime, endTime, Pageable.unpaged());
+        if(useElasticSearch) {
+            return attendeeIndexRepository.findByIdAndStartTimeAndEndTime(attendeeId, startTime, endTime, Pageable.unpaged());
+        } else {
+            return attendeeIndexJPARepository.findByIdAndStartTimeAndEndTime(attendeeId, startTime, endTime, Pageable.unpaged());
+        }
     }
 
     @Override
     public EventIndex findEvent(Long entityId) {
-        return eventIndexRepository.findByEntityId(entityId);
+        if(useElasticSearch) {
+            return eventIndexRepository.findByEntityId(entityId);
+        } else {
+            return eventIndexJPARepository.findByEntityId(entityId);
+        }
     }
 
     @Override
     public RecurringIndex findRecurringIndex(Long entityId) {
-        return recurringIndexRepository.findByEntityId(entityId);
+        if(useElasticSearch) {
+            return recurringIndexRepository.findByEntityId(entityId);
+        } else {
+            return recurringIndexJPARepository.findByEntityId(entityId);
+        }
     }
 
     @Override
     public RecurringAttendeeIndex findRecurringAttendee(Long recurringEntityId) {
-        return recurringAttendeeIndexRepository.findByRecurringEntityId(recurringEntityId);
+        if(useElasticSearch) {
+            return recurringAttendeeIndexRepository.findByRecurringEntityId(recurringEntityId);
+        } else {
+            return recurringAttendeeIndexJPARepository.findByRecurringEntityId(recurringEntityId);
+        }
     }
 }

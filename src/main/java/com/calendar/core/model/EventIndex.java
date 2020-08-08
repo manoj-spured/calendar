@@ -1,5 +1,6 @@
 package com.calendar.core.model;
 
+import com.calendar.core.model.enums.Occurrence;
 import org.springframework.data.elasticsearch.annotations.Document;
 
 import javax.persistence.Entity;
@@ -16,20 +17,24 @@ import java.util.Date;
 @Entity
 @Table(name = "event_index")
 @SequenceGenerator(name="seq", initialValue=100000, allocationSize=10)
-public class EventIndex extends GenericItem{
+public class EventIndex {
 
     private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy= GenerationType.SEQUENCE, generator="seq")
-    String id;
+    Long id;
+    Long boardId;
+    Long courseId;
+    Long groupId;
     Long eventType;
     Long eventCategory;
     Timestamp startTime;
     Timestamp endTime;
     boolean isRecurring;
-    Date eventStartDate;
-    Date eventEndDate;
+    Long entityStartTime;
+    Long entityEndTime;
+    Occurrence occurrenceType;
     Long entityId;
     String title;
     String text;
@@ -41,12 +46,36 @@ public class EventIndex extends GenericItem{
     String status;
     String targetURL;
 
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
+    }
+
+    public Long getBoardId() {
+        return boardId;
+    }
+
+    public void setBoardId(Long boardId) {
+        this.boardId = boardId;
+    }
+
+    public Long getCourseId() {
+        return courseId;
+    }
+
+    public void setCourseId(Long courseId) {
+        this.courseId = courseId;
+    }
+
+    public Long getGroupId() {
+        return groupId;
+    }
+
+    public void setGroupId(Long groupId) {
+        this.groupId = groupId;
     }
 
     public Long getEventType() {
@@ -89,20 +118,28 @@ public class EventIndex extends GenericItem{
         isRecurring = recurring;
     }
 
-    public Date getEventStartDate() {
-        return eventStartDate;
+    public Long getEntityStartTime() {
+        return entityStartTime;
     }
 
-    public void setEventStartDate(Date eventStartDate) {
-        this.eventStartDate = eventStartDate;
+    public void setEntityStartTime(Long entityStartTime) {
+        this.entityStartTime = entityStartTime;
     }
 
-    public Date getEventEndDate() {
-        return eventEndDate;
+    public Long getEntityEndTime() {
+        return entityEndTime;
     }
 
-    public void setEventEndDate(Date eventEndDate) {
-        this.eventEndDate = eventEndDate;
+    public void setEntityEndTime(Long entityEndTime) {
+        this.entityEndTime = entityEndTime;
+    }
+
+    public Occurrence getOccurrenceType() {
+        return occurrenceType;
+    }
+
+    public void setOccurrenceType(Occurrence occurrenceType) {
+        this.occurrenceType = occurrenceType;
     }
 
     public Long getEntityId() {

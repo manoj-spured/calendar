@@ -15,24 +15,24 @@ import java.sql.Timestamp;
 @Entity
 @Table(name = "recurring_index")
 @SequenceGenerator(name="seq", initialValue=100000, allocationSize=10)
-public class RecurringIndex extends GenericItem {
+public class RecurringIndex {
 
     private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy= GenerationType.SEQUENCE, generator="seq")
-    String id;
+    Long id;
     Long recurringEntityId;
     Long entityId;
-    Timestamp startTimestamp;
-    Timestamp startEndstamp;
+    Timestamp startTime;
+    Timestamp endTime;
     String status;
 
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -52,20 +52,20 @@ public class RecurringIndex extends GenericItem {
         this.entityId = entityId;
     }
 
-    public Timestamp getStartTimestamp() {
-        return startTimestamp;
+    public Timestamp getStartTime() {
+        return startTime;
     }
 
-    public void setStartTimestamp(Timestamp startTimestamp) {
-        this.startTimestamp = startTimestamp;
+    public void setStartTime(Timestamp startTime) {
+        this.startTime = startTime;
     }
 
-    public Timestamp getStartEndstamp() {
-        return startEndstamp;
+    public Timestamp getEndTime() {
+        return endTime;
     }
 
-    public void setStartEndstamp(Timestamp startEndstamp) {
-        this.startEndstamp = startEndstamp;
+    public void setEndTime(Timestamp endTime) {
+        this.endTime = endTime;
     }
 
     public String getStatus() {

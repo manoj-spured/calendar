@@ -16,13 +16,13 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "attendee_index")
 @SequenceGenerator(name="seq", initialValue=100000, allocationSize=10)
-public class AttendeeIndex extends GenericItem{
+public class AttendeeIndex {
 
     private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy= GenerationType.SEQUENCE, generator="seq")
-    String id;
+    Long id;
     Long eventType;
     Long entityId;
     String eventNote;
@@ -32,11 +32,11 @@ public class AttendeeIndex extends GenericItem{
     Long startTime;
     Long endTime;
 
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

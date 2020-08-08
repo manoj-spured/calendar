@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @SpringBootApplication
 @EnableElasticsearchRepositories(basePackages = "com.calendar.core.repository")
-@EnableJpaRepositories(basePackages = {"com.calendar.core"})
+@EnableJpaRepositories(basePackages = {"com.calendar.core.jparepository"})
 public class CalendarApplication {
 
     public static void main(String[] args) {
