@@ -2,7 +2,9 @@ package com.calendar.core.populator;
 
 import com.calendar.core.data.AttendeeEventData;
 import com.calendar.core.model.RecurringIndex;
+import org.springframework.stereotype.Service;
 
+@Service
 public class RecurringIndexPopulator {
 
     public void populate(RecurringIndex recurringIndex, AttendeeEventData attendeeEventData)

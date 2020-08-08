@@ -2,7 +2,9 @@ package com.calendar.core.populator;
 
 import com.calendar.core.data.AttendeeEventData;
 import com.calendar.core.model.AttendeeIndex;
+import org.springframework.stereotype.Service;
 
+@Service
 public class AttendeeIndexPopulator {
 
     public void populate(AttendeeIndex attendeeIndex, AttendeeEventData attendeeEventData)
