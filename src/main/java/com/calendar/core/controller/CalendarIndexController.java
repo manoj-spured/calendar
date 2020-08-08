@@ -5,6 +5,10 @@ import com.calendar.core.model.AttendeeIndex;
 import com.calendar.core.model.EventIndex;
 import com.calendar.core.model.RecurringAttendeeIndex;
 import com.calendar.core.model.RecurringIndex;
+import com.calendar.core.populator.AttendeeIndexPopulator;
+import com.calendar.core.populator.EventIndexPopulator;
+import com.calendar.core.populator.RecurringAttendeeIndexPopulator;
+import com.calendar.core.populator.RecurringIndexPopulator;
 import com.calendar.core.service.CalendarIndexService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,6 +27,14 @@ public class CalendarIndexController {
 
     @Autowired
     CalendarIndexService calendarIndexService;
+    @Autowired
+    AttendeeIndexPopulator attendeeIndexPopulator;
+    @Autowired
+    EventIndexPopulator eventIndexPopulator;
+    @Autowired
+    RecurringAttendeeIndexPopulator recurringAttendeeIndexPopulator;
+    @Autowired
+    RecurringIndexPopulator recurringIndexPopulator;
 
     @PostMapping(value = "/attendeeevent")
     @ResponseBody
@@ -41,11 +53,11 @@ public class CalendarIndexController {
             {
                 RecurringIndex recurringIndex = calendarIndexService.findRecurringIndex(attendeeIndex.getEntityId());
                 RecurringAttendeeIndex recurringAttendeeIndex = calendarIndexService.findRecurringAttendee(recurringIndex.getRecurringEntityId());
-                attendeeEventData.setRecurringAttendee_eventNote(recurringAttendeeIndex.getEventNote());
+                recurringIndexPopulator.populate(recurringIndex, attendeeEventData);
+                recurringAttendeeIndexPopulator.populate(recurringAttendeeIndex, attendeeEventData);
             }
-            attendeeEventData.setAttendee_entityId(attendeeIndex.getEntityId());
-            attendeeEventData.setAttendee_acceptanceStatus(attendeeIndex.getAcceptanceStatus());
-            attendeeEventData.setEvent_title(eventIndex.getTitle());
+            eventIndexPopulator.populate(eventIndex, attendeeEventData);
+            attendeeIndexPopulator.populate(attendeeIndex, attendeeEventData);
 
             attendeeEventDataList.add(attendeeEventData);
         }

@@ -7,8 +7,8 @@
     "acceptanceStatus": "ACCEPTED",
     "responseStatus": "SUBMITTED",
     "score": " 104",
-    "startTime":"2020-07-21 09:01:15.0",
-    "endTime":"2020-07-28 09:01:15.0"
+    "startTime": "1595302275000",
+    "endTime": "1595907075000"
   },
   {
     "id": 2,
@@ -18,8 +18,8 @@
     "acceptanceStatus": "ACCEPTED",
     "responseStatus": "SUBMITTED",
     "score": " 140",
-    "startTime":"2020-07-27 09:01:15.0",
-    "endTime":"2020-07-29 09:01:15.0"
+    "startTime": "1595820675000",
+    "endTime": "1595993475000"
   },
   {
     "id": 3,
@@ -29,8 +29,8 @@
     "acceptanceStatus": "ACCEPTED",
     "responseStatus": "SUBMITTED",
     "score": " 120",
-    "startTime":"2020-07-20 09:01:15.0",
-    "endTime":"2020-07-22 09:01:15.0"
+    "startTime": "1595215875000",
+    "endTime": "1595388675000"
   },
   {
     "id": 4,
@@ -40,7 +40,18 @@
     "acceptanceStatus": "ACCEPTED",
     "responseStatus": "SUBMITTED",
     "score": " 120",
-    "startTime":"2020-07-20 09:01:15.0",
-    "endTime":"2020-07-29 09:01:15.0"
+    "startTime": "1595215875000",
+    "endTime": "1595993475000"
+  },
+  {
+    "id": 5,
+    "eventType": 205,
+    "entityId": 3005,
+    "eventNote": " Test Event Note 5",
+    "acceptanceStatus": "ACCEPTED",
+    "responseStatus": "SUBMITTED",
+    "score": " 120",
+    "startTime": "1592623875000",
+    "endTime": "1593401475000"
   }
 ]

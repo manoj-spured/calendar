@@ -29,8 +29,8 @@ public class EventIndex {
     Long groupId;
     Long eventType;
     Long eventCategory;
-    Timestamp startTime;
-    Timestamp endTime;
+    Long startTime;
+    Long endTime;
     boolean isRecurring;
     Long entityStartTime;
     Long entityEndTime;
@@ -94,19 +94,19 @@ public class EventIndex {
         this.eventCategory = eventCategory;
     }
 
-    public Timestamp getStartTime() {
+    public Long getStartTime() {
         return startTime;
     }
 
-    public void setStartTime(Timestamp startTime) {
+    public void setStartTime(Long startTime) {
         this.startTime = startTime;
     }
 
-    public Timestamp getEndTime() {
+    public Long getEndTime() {
         return endTime;
     }
 
-    public void setEndTime(Timestamp endTime) {
+    public void setEndTime(Long endTime) {
         this.endTime = endTime;
     }
 

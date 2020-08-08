@@ -1,16 +1,12 @@
 package com.calendar.core.data;
 
-import com.calendar.core.model.GenericItem;
 import com.calendar.core.model.enums.AcceptanceStatus;
+import com.calendar.core.model.enums.Occurrence;
 import com.calendar.core.model.enums.ResponseStatus;
-
-import java.sql.Time;
-import java.sql.Timestamp;
-import java.util.Date;
 
 public class AttendeeEventData {
 
-    String attendee_id;
+    Long attendee_id;
     Long attendee_eventType;
     Long attendee_entityId;
     String attendee_eventNote;
@@ -20,14 +16,18 @@ public class AttendeeEventData {
     Long attendee_startTime;
     Long attendee_endTime;
 
-    String event_id;
+    Long event_id;
+    Long event_boardId;
+    Long event_courseId;
+    Long event_groupId;
     Long event_eventType;
     Long event_eventCategory;
-    Timestamp event_startTime;
-    Timestamp event_endTime;
+    Long event_startTime;
+    Long event_endTime;
     boolean event_isRecurring;
-    Date event_eventStartDate;
-    Date event_eventEndDate;
+    Long event_entityStartTime;
+    Long event_entityEndTime;
+    Occurrence event_occurrenceType;
     String event_title;
     String event_text;
     Long event_hostId;
@@ -38,22 +38,22 @@ public class AttendeeEventData {
     String event_status;
     String event_targetURL;
 
-    String recurring_id;
+    Long recurring_id;
     Long recurring_recurringEntityId;
-    Timestamp recurring_startTimestamp;
-    Timestamp recurring_startEndstamp;
+    Long recurring_startTime;
+    Long recurring_endTime;
     String recurring_status;
 
-    String recurringAttendee_id;
+    Long recurringAttendee_id;
     Long recurringAttendee_attendee;
     AcceptanceStatus recurringAttendee_acceptanceStatus;
     String recurringAttendee_eventNote;
 
-    public String getAttendee_id() {
+    public Long getAttendee_id() {
         return attendee_id;
     }
 
-    public void setAttendee_id(String attendee_id) {
+    public void setAttendee_id(Long attendee_id) {
         this.attendee_id = attendee_id;
     }
 
@@ -121,11 +121,11 @@ public class AttendeeEventData {
         this.attendee_endTime = attendee_endTime;
     }
 
-    public String getEvent_id() {
+    public Long getEvent_id() {
         return event_id;
     }
 
-    public void setEvent_id(String event_id) {
+    public void setEvent_id(Long event_id) {
         this.event_id = event_id;
     }
 
@@ -145,19 +145,19 @@ public class AttendeeEventData {
         this.event_eventCategory = event_eventCategory;
     }
 
-    public Timestamp getEvent_startTime() {
+    public Long getEvent_startTime() {
         return event_startTime;
     }
 
-    public void setEvent_startTime(Timestamp event_startTime) {
+    public void setEvent_startTime(Long event_startTime) {
         this.event_startTime = event_startTime;
     }
 
-    public Timestamp getEvent_endTime() {
+    public Long getEvent_endTime() {
         return event_endTime;
     }
 
-    public void setEvent_endTime(Timestamp event_endTime) {
+    public void setEvent_endTime(Long event_endTime) {
         this.event_endTime = event_endTime;
     }
 
@@ -169,20 +169,52 @@ public class AttendeeEventData {
         this.event_isRecurring = event_isRecurring;
     }
 
-    public Date getEvent_eventStartDate() {
-        return event_eventStartDate;
+    public Long getEvent_boardId() {
+        return event_boardId;
     }
 
-    public void setEvent_eventStartDate(Date event_eventStartDate) {
-        this.event_eventStartDate = event_eventStartDate;
+    public void setEvent_boardId(Long event_boardId) {
+        this.event_boardId = event_boardId;
     }
 
-    public Date getEvent_eventEndDate() {
-        return event_eventEndDate;
+    public Long getEvent_courseId() {
+        return event_courseId;
     }
 
-    public void setEvent_eventEndDate(Date event_eventEndDate) {
-        this.event_eventEndDate = event_eventEndDate;
+    public void setEvent_courseId(Long event_courseId) {
+        this.event_courseId = event_courseId;
+    }
+
+    public Long getEvent_groupId() {
+        return event_groupId;
+    }
+
+    public void setEvent_groupId(Long event_groupId) {
+        this.event_groupId = event_groupId;
+    }
+
+    public Long getEvent_entityStartTime() {
+        return event_entityStartTime;
+    }
+
+    public void setEvent_entityStartTime(Long event_entityStartTime) {
+        this.event_entityStartTime = event_entityStartTime;
+    }
+
+    public Long getEvent_entityEndTime() {
+        return event_entityEndTime;
+    }
+
+    public void setEvent_entityEndTime(Long event_entityEndTime) {
+        this.event_entityEndTime = event_entityEndTime;
+    }
+
+    public Occurrence getEvent_occurrenceType() {
+        return event_occurrenceType;
+    }
+
+    public void setEvent_occurrenceType(Occurrence event_occurrenceType) {
+        this.event_occurrenceType = event_occurrenceType;
     }
 
     public String getEvent_title() {
@@ -257,11 +289,11 @@ public class AttendeeEventData {
         this.event_targetURL = event_targetURL;
     }
 
-    public String getRecurring_id() {
+    public Long getRecurring_id() {
         return recurring_id;
     }
 
-    public void setRecurring_id(String recurring_id) {
+    public void setRecurring_id(Long recurring_id) {
         this.recurring_id = recurring_id;
     }
 
@@ -273,20 +305,20 @@ public class AttendeeEventData {
         this.recurring_recurringEntityId = recurring_recurringEntityId;
     }
 
-    public Timestamp getRecurring_startTimestamp() {
-        return recurring_startTimestamp;
+    public Long getRecurring_startTime() {
+        return recurring_startTime;
     }
 
-    public void setRecurring_startTimestamp(Timestamp recurring_startTimestamp) {
-        this.recurring_startTimestamp = recurring_startTimestamp;
+    public void setRecurring_startTime(Long recurring_startTime) {
+        this.recurring_startTime = recurring_startTime;
     }
 
-    public Timestamp getRecurring_startEndstamp() {
-        return recurring_startEndstamp;
+    public Long getRecurring_endTime() {
+        return recurring_endTime;
     }
 
-    public void setRecurring_startEndstamp(Timestamp recurring_startEndstamp) {
-        this.recurring_startEndstamp = recurring_startEndstamp;
+    public void setRecurring_endTime(Long recurring_endTime) {
+        this.recurring_endTime = recurring_endTime;
     }
 
     public String getRecurring_status() {
@@ -297,11 +329,11 @@ public class AttendeeEventData {
         this.recurring_status = recurring_status;
     }
 
-    public String getRecurringAttendee_id() {
+    public Long getRecurringAttendee_id() {
         return recurringAttendee_id;
     }
 
-    public void setRecurringAttendee_id(String recurringAttendee_id) {
+    public void setRecurringAttendee_id(Long recurringAttendee_id) {
         this.recurringAttendee_id = recurringAttendee_id;
     }
 
