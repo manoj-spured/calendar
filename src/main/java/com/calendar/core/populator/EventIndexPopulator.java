@@ -4,20 +4,22 @@ import com.calendar.core.data.AttendeeEventDTO;
 import com.calendar.core.model.EventIndex;
 import org.springframework.stereotype.Service;
 
+import java.util.Objects;
+
 @Service
 public class EventIndexPopulator {
 
     public void populate(EventIndex eventIndex, AttendeeEventDTO attendeeEventDTO)
     {
-        attendeeEventDTO.setEventType(eventIndex.getEventType().toString());
-        attendeeEventDTO.setEventCategory(eventIndex.getEventCategory().toString());
-        attendeeEventDTO.setStartTime(eventIndex.getStartTime().toString());
-        attendeeEventDTO.setEndTime(eventIndex.getEndTime().toString());
-        attendeeEventDTO.setEntityStartTime(eventIndex.getEntityStartTime().toString());
-        attendeeEventDTO.setEntityEndTime(eventIndex.getEntityEndTime().toString());
-        attendeeEventDTO.setOccurenceType(eventIndex.getOccurrenceType().toString());
+        attendeeEventDTO.setEventType(Objects.nonNull(eventIndex.getEventType()) ? eventIndex.getEventType().toString() : null);
+        attendeeEventDTO.setEventCategory(Objects.nonNull(eventIndex.getEventCategory()) ? eventIndex.getEventCategory().toString() : null);
+        attendeeEventDTO.setStartTime(Objects.nonNull(eventIndex.getStartTime()) ? eventIndex.getStartTime().toString() : null);
+        attendeeEventDTO.setEndTime(Objects.nonNull(eventIndex.getEndTime()) ? eventIndex.getEndTime().toString() : null);
+        attendeeEventDTO.setEntityStartTime(Objects.nonNull(eventIndex.getEntityStartTime()) ? eventIndex.getEntityStartTime().toString() : null);
+        attendeeEventDTO.setEntityEndTime(Objects.nonNull(eventIndex.getEntityEndTime()) ? eventIndex.getEntityEndTime().toString() : null);
+        attendeeEventDTO.setOccurenceType(Objects.nonNull(eventIndex.getOccurrenceType()) ? eventIndex.getOccurrenceType().toString() : null);
         attendeeEventDTO.setIsRecurring(eventIndex.isRecurring());
-        attendeeEventDTO.setEntityId(eventIndex.getEntityId().toString());
+        attendeeEventDTO.setEntityId(Objects.nonNull(eventIndex.getEntityId()) ? eventIndex.getEntityId().toString() : null);
         attendeeEventDTO.setTitle(eventIndex.getTitle());
         attendeeEventDTO.setText(eventIndex.getText());
         attendeeEventDTO.setLocation(eventIndex.getLocation());

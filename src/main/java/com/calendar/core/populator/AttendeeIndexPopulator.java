@@ -6,25 +6,28 @@ import com.calendar.core.data.ResponseDTO;
 import com.calendar.core.model.AttendeeIndex;
 import org.springframework.stereotype.Service;
 
+import java.util.Objects;
+
 @Service
 public class AttendeeIndexPopulator {
 
     public void populate(AttendeeIndex attendeeIndex, AttendeeEventDTO attendeeEventDTO)
     {
+        attendeeEventDTO.set_type("CalendarEvent");
         AttendeeProfileDTO attendeeProfileDTO = new AttendeeProfileDTO();
         attendeeProfileDTO.set_type("UserBasicProfile");
-        attendeeProfileDTO.setUserId(attendeeIndex.getId().toString());
+        attendeeProfileDTO.setUserId(Objects.nonNull(attendeeIndex.getId()) ? attendeeIndex.getId().toString() : null);
         attendeeEventDTO.setAttendeeProfileDTO(attendeeProfileDTO);
 
         ResponseDTO responseDTO = new ResponseDTO();
-        responseDTO.setAttendeeStatus(attendeeIndex.getAcceptanceStatus().toString());
-        responseDTO.setResponseStatus(attendeeIndex.getResponseStatus().toString());
+        responseDTO.setAttendeeStatus(Objects.nonNull(attendeeIndex.getAcceptanceStatus()) ? attendeeIndex.getAcceptanceStatus().toString() : null);
+        responseDTO.setResponseStatus(Objects.nonNull(attendeeIndex.getResponseStatus()) ? attendeeIndex.getResponseStatus().toString() : null);
         responseDTO.setGrade("");
         attendeeEventDTO.setResponseDTO(responseDTO);
 
         AttendeeProfileDTO hostProfileDTO = new AttendeeProfileDTO();
         hostProfileDTO.set_type("UserBasicProfile");
-        hostProfileDTO.setUserId(attendeeIndex.getId().toString());
-        attendeeEventDTO.setAttendeeProfileDTO(hostProfileDTO);
+        hostProfileDTO.setUserId(Objects.nonNull(attendeeIndex.getId()) ? attendeeIndex.getId().toString() : null);
+        attendeeEventDTO.setHostProfile(hostProfileDTO);
     }
 }
