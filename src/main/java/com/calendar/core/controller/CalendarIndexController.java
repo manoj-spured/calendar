@@ -1,6 +1,6 @@
 package com.calendar.core.controller;
 
-import com.calendar.core.data.AttendeeEventData;
+import com.calendar.core.data.AttendeeEventDTO;
 import com.calendar.core.model.AttendeeIndex;
 import com.calendar.core.model.EventIndex;
 import com.calendar.core.model.RecurringAttendeeIndex;
@@ -38,14 +38,14 @@ public class CalendarIndexController {
 
     @PostMapping(value = "/attendeeevent")
     @ResponseBody
-    public List<AttendeeEventData> getAttendeeEventData(@RequestBody AttendeeIndex attendee)
+    public List<AttendeeEventDTO> getAttendeeEventData(@RequestBody AttendeeIndex attendee)
     {
-        List<AttendeeEventData> attendeeEventDataList = new ArrayList<>();
+        List<AttendeeEventDTO> attendeeEventDTOList = new ArrayList<>();
         Iterable<AttendeeIndex> attendeeIndices = calendarIndexService.findAllAttendees(attendee.getId(), attendee.getStartTime(),attendee.getEndTime());
 
         for (AttendeeIndex attendeeIndex : attendeeIndices)
         {
-            AttendeeEventData attendeeEventData = new AttendeeEventData();
+            AttendeeEventDTO attendeeEventDTO = new AttendeeEventDTO();
 
             EventIndex eventIndex = calendarIndexService.findEvent(attendeeIndex.getEntityId());
 
@@ -53,16 +53,16 @@ public class CalendarIndexController {
             {
                 RecurringIndex recurringIndex = calendarIndexService.findRecurringIndex(attendeeIndex.getEntityId());
                 RecurringAttendeeIndex recurringAttendeeIndex = calendarIndexService.findRecurringAttendee(recurringIndex.getRecurringEntityId());
-                recurringIndexPopulator.populate(recurringIndex, attendeeEventData);
-                recurringAttendeeIndexPopulator.populate(recurringAttendeeIndex, attendeeEventData);
+                recurringIndexPopulator.populate(recurringIndex, attendeeEventDTO);
+                recurringAttendeeIndexPopulator.populate(recurringAttendeeIndex, attendeeEventDTO);
             }
-            eventIndexPopulator.populate(eventIndex, attendeeEventData);
-            attendeeIndexPopulator.populate(attendeeIndex, attendeeEventData);
+            eventIndexPopulator.populate(eventIndex, attendeeEventDTO);
+            attendeeIndexPopulator.populate(attendeeIndex, attendeeEventDTO);
 
-            attendeeEventDataList.add(attendeeEventData);
+            attendeeEventDTOList.add(attendeeEventDTO);
         }
 
-        return attendeeEventDataList;
+        return attendeeEventDTOList;
     }
 
     /**

@@ -1,19 +1,21 @@
 package com.calendar.core.populator;
 
-import com.calendar.core.data.AttendeeEventData;
+import com.calendar.core.data.AttendeeEventDTO;
+import com.calendar.core.data.RecurringEventInfoDTO;
 import com.calendar.core.model.RecurringIndex;
 import org.springframework.stereotype.Service;
 
 @Service
 public class RecurringIndexPopulator {
 
-    public void populate(RecurringIndex recurringIndex, AttendeeEventData attendeeEventData)
+    public void populate(RecurringIndex recurringIndex, AttendeeEventDTO attendeeEventDTO)
     {
-        attendeeEventData.setRecurring_id(recurringIndex.getId());
-        attendeeEventData.setRecurring_recurringEntityId(recurringIndex.getRecurringEntityId());
-        attendeeEventData.setRecurring_startTime(recurringIndex.getStartTime());
-        attendeeEventData.setRecurring_endTime(recurringIndex.getEndTime());
-        attendeeEventData.setRecurring_status(recurringIndex.getStatus());
-        
+        RecurringEventInfoDTO recurringEventInfoDTO = new RecurringEventInfoDTO();
+        recurringEventInfoDTO.set_type("RecurringEvent");
+        recurringEventInfoDTO.setRecurringEntityId(recurringIndex.getRecurringEntityId().toString());
+        recurringEventInfoDTO.setStartTime(recurringIndex.getStartTime().toString());
+        recurringEventInfoDTO.setEndTime(recurringIndex.getEndTime().toString());
+        recurringEventInfoDTO.setStatus(recurringIndex.getStatus());
+        attendeeEventDTO.setRecurringEventInfoDTO(recurringEventInfoDTO);
     }
 }

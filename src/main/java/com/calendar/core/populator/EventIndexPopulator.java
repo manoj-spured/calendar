@@ -1,34 +1,29 @@
 package com.calendar.core.populator;
 
-import com.calendar.core.data.AttendeeEventData;
+import com.calendar.core.data.AttendeeEventDTO;
 import com.calendar.core.model.EventIndex;
 import org.springframework.stereotype.Service;
 
 @Service
 public class EventIndexPopulator {
 
-    public void populate(EventIndex eventIndex, AttendeeEventData attendeeEventData)
+    public void populate(EventIndex eventIndex, AttendeeEventDTO attendeeEventDTO)
     {
-        attendeeEventData.setEvent_id(eventIndex.getId());
-        attendeeEventData.setEvent_boardId(eventIndex.getBoardId());
-        attendeeEventData.setEvent_courseId(eventIndex.getCourseId());
-        attendeeEventData.setEvent_groupId(eventIndex.getGroupId());
-        attendeeEventData.setEvent_eventType(eventIndex.getEventType());
-        attendeeEventData.setEvent_eventCategory(eventIndex.getEventCategory());
-        attendeeEventData.setEvent_startTime(eventIndex.getStartTime());
-        attendeeEventData.setEvent_endTime(eventIndex.getEndTime());
-        attendeeEventData.setEvent_isRecurring(eventIndex.isRecurring());
-        attendeeEventData.setEvent_entityStartTime(eventIndex.getEntityStartTime());
-        attendeeEventData.setEvent_entityEndTime(eventIndex.getEntityEndTime());
-        attendeeEventData.setEvent_occurrenceType(eventIndex.getOccurrenceType());
-        attendeeEventData.setEvent_title(eventIndex.getTitle());
-        attendeeEventData.setEvent_text(eventIndex.getText());
-        attendeeEventData.setEvent_hostId(eventIndex.getHostId());
-        attendeeEventData.setEvent_eventUrl(eventIndex.getEventUrl());
-        attendeeEventData.setEvent_location(eventIndex.getLocation());
-        attendeeEventData.setEvent_contactDetails(eventIndex.getContactDetails());
-        attendeeEventData.setEvent_siteUrl(eventIndex.getSiteUrl());
-        attendeeEventData.setEvent_status(eventIndex.getStatus());
-        attendeeEventData.setEvent_targetURL(eventIndex.getTargetURL());
+        attendeeEventDTO.setEventType(eventIndex.getEventType().toString());
+        attendeeEventDTO.setEventCategory(eventIndex.getEventCategory().toString());
+        attendeeEventDTO.setStartTime(eventIndex.getStartTime().toString());
+        attendeeEventDTO.setEndTime(eventIndex.getEndTime().toString());
+        attendeeEventDTO.setEntityStartTime(eventIndex.getEntityStartTime().toString());
+        attendeeEventDTO.setEntityEndTime(eventIndex.getEntityEndTime().toString());
+        attendeeEventDTO.setOccurenceType(eventIndex.getOccurrenceType().toString());
+        attendeeEventDTO.setIsRecurring(eventIndex.isRecurring());
+        attendeeEventDTO.setEntityId(eventIndex.getEntityId().toString());
+        attendeeEventDTO.setTitle(eventIndex.getTitle());
+        attendeeEventDTO.setText(eventIndex.getText());
+        attendeeEventDTO.setLocation(eventIndex.getLocation());
+        attendeeEventDTO.setContactDetails(eventIndex.getContactDetails());
+        attendeeEventDTO.setSiteUrl(eventIndex.getSiteUrl());
+        attendeeEventDTO.setStatus(eventIndex.getStatus());
+        attendeeEventDTO.setTargetUrl(eventIndex.getTargetURL());
     }
 }

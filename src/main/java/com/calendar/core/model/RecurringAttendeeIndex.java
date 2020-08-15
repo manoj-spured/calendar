@@ -26,6 +26,7 @@ public class RecurringAttendeeIndex {
     Long attendee;
     AcceptanceStatus acceptanceStatus;
     String eventNote;
+    Long responseTime;
 
     public Long getId() {
         return id;
@@ -65,5 +66,13 @@ public class RecurringAttendeeIndex {
 
     public void setEventNote(String eventNote) {
         this.eventNote = eventNote;
+    }
+
+    public Long getResponseTime() {
+        return responseTime;
+    }
+
+    public void setResponseTime(Long responseTime) {
+        this.responseTime = responseTime;
     }
 }
