@@ -13,17 +13,25 @@ public interface CalendarIndexService {
 
     void saveAttendees(List<AttendeeIndex> attendeeIndexList);
 
+    void saveAttendeesToDB(List<AttendeeIndex> attendeeIndexList);
+
     Iterable<EventIndex> findAllEvents();
 
     void saveEvents(List<EventIndex> eventIndexList);
+
+    void saveEventsToDB(List<EventIndex> eventIndexList);
 
     Iterable<RecurringAttendeeIndex> findAllRecurringAttendees();
 
     void saveRecurringAttendees(List<RecurringAttendeeIndex> recurringAttendeeIndexList);
 
+    void saveRecurringAttendeesToDB(List<RecurringAttendeeIndex> recurringAttendeeIndexList);
+
     Iterable<RecurringIndex> findAllRecurringIndices();
 
     void saveRecurringIndices(List<RecurringIndex> recurringIndexList);
+
+    void saveRecurringIndicesToDB(List<RecurringIndex> recurringIndexList);
 
     Iterable<AttendeeIndex> findAllAttendees(Long attendeeId, Long startTime, Long endTime);
 

@@ -49,11 +49,7 @@ public class CalendarIndexServiceImpl implements CalendarIndexService {
 
     @Override
     public void saveAttendees(List<AttendeeIndex> attendeeIndexList) {
-        if(useElasticSearch) {
             attendeeIndexRepository.saveAll(attendeeIndexList);
-        } else {
-            attendeeIndexJPARepository.saveAll(attendeeIndexList);
-        }
     }
 
     @Override
@@ -63,11 +59,7 @@ public class CalendarIndexServiceImpl implements CalendarIndexService {
 
     @Override
     public void saveEvents(List<EventIndex> eventIndexList) {
-        if(useElasticSearch) {
             eventIndexRepository.saveAll(eventIndexList);
-        } else {
-            eventIndexJPARepository.saveAll(eventIndexList);
-        }
     }
 
     @Override
@@ -77,11 +69,7 @@ public class CalendarIndexServiceImpl implements CalendarIndexService {
 
     @Override
     public void saveRecurringAttendees(List<RecurringAttendeeIndex> recurringAttendeeIndexList) {
-        if(useElasticSearch) {
             recurringAttendeeIndexRepository.saveAll(recurringAttendeeIndexList);
-        } else {
-            recurringAttendeeIndexJPARepository.saveAll(recurringAttendeeIndexList);
-        }
     }
 
     @Override
@@ -91,11 +79,7 @@ public class CalendarIndexServiceImpl implements CalendarIndexService {
 
     @Override
     public void saveRecurringIndices(List<RecurringIndex> recurringIndexList) {
-        if(useElasticSearch) {
             recurringIndexRepository.saveAll(recurringIndexList);
-        } else {
-            recurringIndexJPARepository.saveAll(recurringIndexList);
-        }
     }
 
     @Override
@@ -133,5 +117,25 @@ public class CalendarIndexServiceImpl implements CalendarIndexService {
         } else {
             return recurringAttendeeIndexJPARepository.findByRecurringEntityId(recurringEntityId);
         }
+    }
+
+    @Override
+    public void saveAttendeesToDB(List<AttendeeIndex> attendeeIndexList) {
+        attendeeIndexJPARepository.saveAll(attendeeIndexList);
+    }
+
+    @Override
+    public void saveEventsToDB(List<EventIndex> eventIndexList) {
+        eventIndexJPARepository.saveAll(eventIndexList);
+    }
+
+    @Override
+    public void saveRecurringAttendeesToDB(List<RecurringAttendeeIndex> recurringAttendeeIndexList) {
+        recurringAttendeeIndexJPARepository.saveAll(recurringAttendeeIndexList);
+    }
+
+    @Override
+    public void saveRecurringIndicesToDB(List<RecurringIndex> recurringIndexList) {
+        recurringIndexJPARepository.saveAll(recurringIndexList);
     }
 }
