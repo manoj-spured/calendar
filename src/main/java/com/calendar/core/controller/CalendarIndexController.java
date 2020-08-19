@@ -22,8 +22,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@RequestMapping(value= "/attendee")
-public class CalendarIndexController {
+@RequestMapping(value = "/attendee")
+public class CalendarIndexController
+{
 
     @Autowired
     CalendarIndexService calendarIndexService;
@@ -41,147 +42,189 @@ public class CalendarIndexController {
     public List<AttendeeEventDTO> getAttendeeEventData(@RequestBody AttendeeIndex attendee)
     {
         List<AttendeeEventDTO> attendeeEventDTOList = new ArrayList<>();
-        Iterable<AttendeeIndex> attendeeIndices = calendarIndexService.findAllAttendees(attendee.getId(), attendee.getStartTime(),attendee.getEndTime());
-
+        Iterable<AttendeeIndex> attendeeIndices = calendarIndexService.findAllAttendees(attendee.getId(), attendee.getStartTime(), attendee.getEndTime());
+        //Make single call to get all events by passing all attendee indices
+        List<Long> enitityIdList = new ArrayList<>();
+        List<Long> eventEnitityIdList = new ArrayList<>();
+        List<Long> recurringEnitityIdList = new ArrayList<>();
         for (AttendeeIndex attendeeIndex : attendeeIndices)
         {
-            AttendeeEventDTO attendeeEventDTO = new AttendeeEventDTO();
+            enitityIdList.add(attendeeIndex.getEntityId());
+        }
+        AttendeeEventDTO attendeeEventDTO = new AttendeeEventDTO();
+        Iterable<EventIndex> eventIndices = calendarIndexService.findEvent(enitityIdList);
 
-            EventIndex eventIndex = calendarIndexService.findEvent(attendeeIndex.getEntityId());
-
+        for (EventIndex eventIndex : eventIndices)
+        {
             if (eventIndex.isRecurring())
             {
-                RecurringIndex recurringIndex = calendarIndexService.findRecurringIndex(attendeeIndex.getEntityId());
-                RecurringAttendeeIndex recurringAttendeeIndex = calendarIndexService.findRecurringAttendee(recurringIndex.getRecurringEntityId());
-                recurringIndexPopulator.populate(recurringIndex, attendeeEventDTO);
-                recurringAttendeeIndexPopulator.populate(recurringAttendeeIndex, attendeeEventDTO);
+                eventEnitityIdList.add(eventIndex.getEntityId());
             }
-            eventIndexPopulator.populate(eventIndex, attendeeEventDTO);
-            attendeeIndexPopulator.populate(attendeeIndex, attendeeEventDTO);
-
-            attendeeEventDTOList.add(attendeeEventDTO);
         }
+        Iterable<RecurringIndex> recurringIndices = calendarIndexService.findRecurringIndex(eventEnitityIdList);
+
+        for (RecurringIndex recurringIndex: recurringIndices)
+        {
+            recurringEnitityIdList.add(recurringIndex.getRecurringEntityId());
+        }
+        //Pass user id as well to filter recurring attendees
+        Iterable<RecurringAttendeeIndex> recurringAttendeeIndex = calendarIndexService.findRecurringAttendee(recurringEnitityIdList);
+
+        /*recurringIndexPopulator.populate(recurringIndex, attendeeEventDTO);
+        recurringAttendeeIndexPopulator.populate(recurringAttendeeIndex, attendeeEventDTO);
+        eventIndexPopulator.populate(eventIndices, attendeeEventDTO);
+        attendeeIndexPopulator.populate(attendeeIndex, attendeeEventDTO);*/
+
+        attendeeEventDTOList.add(attendeeEventDTO);
+
 
         return attendeeEventDTOList;
     }
 
     /**
      * Method to fetch all attendees from the database.
+     *
      * @return AttendeeIndex list
      */
-    @GetMapping(value= "/getallattendees")
-    public Iterable<AttendeeIndex> getAllAttendees() {
+    @GetMapping(value = "/getallattendees")
+    public Iterable<AttendeeIndex> getAllAttendees()
+    {
         return calendarIndexService.findAllAttendees();
     }
 
     /**
      * Method to save the attendees to Elastic search
+     *
      * @param attendeeIndexList attendeeIndexList
      * @return Save response
      */
-    @PostMapping(value= "/saveattendees")
-    public String saveAttendees(@RequestBody List<AttendeeIndex> attendeeIndexList) {
+    @PostMapping(value = "/saveattendees")
+    public String saveAttendees(@RequestBody List<AttendeeIndex> attendeeIndexList)
+    {
         calendarIndexService.saveAttendees(attendeeIndexList);
         return "Records saved to ElasticSearch";
     }
 
     /**
      * Method to fetch all Events from the database.
+     *
      * @return EventIndex list
      */
-    @GetMapping(value= "/getallevents")
-    public Iterable<EventIndex> getAllEvents() {
+    @GetMapping(value = "/getallevents")
+    public Iterable<EventIndex> getAllEvents()
+    {
         return calendarIndexService.findAllEvents();
     }
 
     /**
      * Method to save the Events to Elastic search
+     *
      * @param eventIndexList eventIndexList
      * @return Save response
      */
-    @PostMapping(value= "/saveevents")
-    public String saveEvents(@RequestBody List<EventIndex> eventIndexList) {
+    @PostMapping(value = "/saveevents")
+    public String saveEvents(@RequestBody List<EventIndex> eventIndexList)
+    {
         calendarIndexService.saveEvents(eventIndexList);
         return "Records saved to ElasticSearch";
     }
 
     /**
      * Method to fetch all RecurringAttendees from the database.
+     *
      * @return RecurringAttendeeIndex list
      */
-    @GetMapping(value= "/getallrecurringattendees")
-    public Iterable<RecurringAttendeeIndex> getAllRecurringAttendees() {
+    @GetMapping(value = "/getallrecurringattendees")
+    public Iterable<RecurringAttendeeIndex> getAllRecurringAttendees()
+    {
         return calendarIndexService.findAllRecurringAttendees();
     }
 
     /**
      * Method to save the Events to Elastic search
+     *
      * @param recurringAttendeeIndexList recurringAttendeeIndexList
      * @return Save response
      */
-    @PostMapping(value= "/saverecurringattendees")
-    public String saveRecurringAttendees(@RequestBody List<RecurringAttendeeIndex> recurringAttendeeIndexList) {
+    @PostMapping(value = "/saverecurringattendees")
+    public String saveRecurringAttendees(@RequestBody List<RecurringAttendeeIndex> recurringAttendeeIndexList)
+    {
         calendarIndexService.saveRecurringAttendees(recurringAttendeeIndexList);
         return "Records saved to ElasticSearch";
     }
 
     /**
      * Method to fetch all RecurringIndices from the database.
+     *
      * @return RecurringIndex list
      */
-    @GetMapping(value= "/getallrecurringindices")
-    public Iterable<RecurringIndex> getAllRecurringIndices() {
+    @GetMapping(value = "/getallrecurringindices")
+    public Iterable<RecurringIndex> getAllRecurringIndices()
+    {
         return calendarIndexService.findAllRecurringIndices();
     }
 
     /**
      * Method to save the Events to Elastic search
+     *
      * @param recurringIndexList recurringIndexList
      * @return Save response
      */
-    @PostMapping(value= "/saverecurringindices")
-    public String saveRecurringIndices(@RequestBody List<RecurringIndex> recurringIndexList) {
+    @PostMapping(value = "/saverecurringindices")
+    public String saveRecurringIndices(@RequestBody List<RecurringIndex> recurringIndexList)
+    {
         calendarIndexService.saveRecurringIndices(recurringIndexList);
         return "Records saved to ElasticSearch";
     }
 
     /**
      * Method to save the attendees in the database.
+     *
      * @param attendeeIndexList attendeeIndexList
      * @return Save response
      */
-    @PostMapping(value= "/saveAttendeesToDB")
-    public String saveAttendeesToDB(@RequestBody List<AttendeeIndex> attendeeIndexList) {
+    @PostMapping(value = "/saveAttendeesToDB")
+    public String saveAttendeesToDB(@RequestBody List<AttendeeIndex> attendeeIndexList)
+    {
         calendarIndexService.saveAttendeesToDB(attendeeIndexList);
         return "Records saved in the DB";
     }
+
     /**
      * Method to save the Events in the database.
+     *
      * @param eventIndexList eventIndexList
      * @return Save response
      */
-    @PostMapping(value= "/saveEventsToDB")
-    public String saveEventsToDB(@RequestBody List<EventIndex> eventIndexList) {
+    @PostMapping(value = "/saveEventsToDB")
+    public String saveEventsToDB(@RequestBody List<EventIndex> eventIndexList)
+    {
         calendarIndexService.saveEventsToDB(eventIndexList);
         return "Records saved in the DB";
     }
+
     /**
      * Method to save the Events in the database.
+     *
      * @param recurringAttendeeIndexList recurringAttendeeIndexList
      * @return Save response
      */
-    @PostMapping(value= "/saveRecurringattendeesToDB")
-    public String saveRecurringAttendeesToDB(@RequestBody List<RecurringAttendeeIndex> recurringAttendeeIndexList) {
+    @PostMapping(value = "/saveRecurringattendeesToDB")
+    public String saveRecurringAttendeesToDB(@RequestBody List<RecurringAttendeeIndex> recurringAttendeeIndexList)
+    {
         calendarIndexService.saveRecurringAttendeesToDB(recurringAttendeeIndexList);
         return "Records saved in the DB";
     }
+
     /**
      * Method to save the Events in the database.
+     *
      * @param recurringIndexList recurringIndexList
      * @return Save response
      */
-    @PostMapping(value= "/saveRecurringindicesToDB")
-    public String saveRecurringIndicesToDB(@RequestBody List<RecurringIndex> recurringIndexList) {
+    @PostMapping(value = "/saveRecurringindicesToDB")
+    public String saveRecurringIndicesToDB(@RequestBody List<RecurringIndex> recurringIndexList)
+    {
         calendarIndexService.saveRecurringIndicesToDB(recurringIndexList);
         return "Records saved in the DB";
     }

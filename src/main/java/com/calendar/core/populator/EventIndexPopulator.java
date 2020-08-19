@@ -1,6 +1,7 @@
 package com.calendar.core.populator;
 
 import com.calendar.core.data.AttendeeEventDTO;
+import com.calendar.core.data.AttendeeProfileDTO;
 import com.calendar.core.model.EventIndex;
 import org.springframework.stereotype.Service;
 
@@ -27,5 +28,10 @@ public class EventIndexPopulator {
         attendeeEventDTO.setSiteUrl(eventIndex.getSiteUrl());
         attendeeEventDTO.setStatus(eventIndex.getStatus());
         attendeeEventDTO.setTargetUrl(eventIndex.getTargetURL());
+
+        AttendeeProfileDTO hostProfileDTO = new AttendeeProfileDTO();
+        hostProfileDTO.set_type("UserBasicProfile");
+        hostProfileDTO.setUserId(Objects.nonNull(eventIndex.getId()) ? eventIndex.getId().toString() : null);
+        attendeeEventDTO.setHostProfile(hostProfileDTO);
     }
 }

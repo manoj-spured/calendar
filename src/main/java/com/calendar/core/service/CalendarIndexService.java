@@ -35,9 +35,9 @@ public interface CalendarIndexService {
 
     Iterable<AttendeeIndex> findAllAttendees(Long attendeeId, Long startTime, Long endTime);
 
-    EventIndex findEvent(Long entityId);
+    Iterable<EventIndex> findEvent(List<Long> entityId);
 
-    RecurringIndex findRecurringIndex(Long entityId);
+    Iterable<RecurringIndex> findRecurringIndex(List<Long> entityId);
 
-    RecurringAttendeeIndex findRecurringAttendee(Long recurringEntityId);
+    Iterable<RecurringAttendeeIndex> findRecurringAttendee(List<Long> recurringEntityId);
 }

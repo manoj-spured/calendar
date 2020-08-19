@@ -93,29 +93,29 @@ public class CalendarIndexServiceImpl implements CalendarIndexService {
     }
 
     @Override
-    public EventIndex findEvent(Long entityId) {
+    public Iterable<EventIndex> findEvent(List<Long> entityIdList) {
         if(useElasticSearch) {
-            return eventIndexRepository.findByEntityId(entityId);
+            return eventIndexRepository.findByEntityId(entityIdList, Pageable.unpaged());
         } else {
-            return eventIndexJPARepository.findByEntityId(entityId);
+            return eventIndexJPARepository.findByEntityId(entityIdList, Pageable.unpaged());
         }
     }
 
     @Override
-    public RecurringIndex findRecurringIndex(Long entityId) {
+    public Iterable<RecurringIndex> findRecurringIndex(List<Long> entityIdList) {
         if(useElasticSearch) {
-            return recurringIndexRepository.findByEntityId(entityId);
+            return recurringIndexRepository.findByEntityId(entityIdList, Pageable.unpaged());
         } else {
-            return recurringIndexJPARepository.findByEntityId(entityId);
+            return recurringIndexJPARepository.findByEntityId(entityIdList, Pageable.unpaged());
         }
     }
 
     @Override
-    public RecurringAttendeeIndex findRecurringAttendee(Long recurringEntityId) {
+    public Iterable<RecurringAttendeeIndex> findRecurringAttendee(List<Long> recurringEntityIdList) {
         if(useElasticSearch) {
-            return recurringAttendeeIndexRepository.findByRecurringEntityId(recurringEntityId);
+            return recurringAttendeeIndexRepository.findByRecurringEntityId(recurringEntityIdList, Pageable.unpaged());
         } else {
-            return recurringAttendeeIndexJPARepository.findByRecurringEntityId(recurringEntityId);
+            return recurringAttendeeIndexJPARepository.findByRecurringEntityId(recurringEntityIdList, Pageable.unpaged());
         }
     }
 

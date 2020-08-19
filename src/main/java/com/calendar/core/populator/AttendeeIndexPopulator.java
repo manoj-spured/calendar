@@ -22,12 +22,7 @@ public class AttendeeIndexPopulator {
         ResponseDTO responseDTO = new ResponseDTO();
         responseDTO.setAttendeeStatus(Objects.nonNull(attendeeIndex.getAcceptanceStatus()) ? attendeeIndex.getAcceptanceStatus().toString() : null);
         responseDTO.setResponseStatus(Objects.nonNull(attendeeIndex.getResponseStatus()) ? attendeeIndex.getResponseStatus().toString() : null);
-        responseDTO.setGrade("");
+        responseDTO.setGrade(attendeeIndex.getScore());
         attendeeEventDTO.setResponseDTO(responseDTO);
-
-        AttendeeProfileDTO hostProfileDTO = new AttendeeProfileDTO();
-        hostProfileDTO.set_type("UserBasicProfile");
-        hostProfileDTO.setUserId(Objects.nonNull(attendeeIndex.getId()) ? attendeeIndex.getId().toString() : null);
-        attendeeEventDTO.setHostProfile(hostProfileDTO);
     }
 }
