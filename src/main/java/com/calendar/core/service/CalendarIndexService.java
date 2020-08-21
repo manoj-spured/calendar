@@ -1,5 +1,6 @@
 package com.calendar.core.service;
 
+import com.calendar.core.data.AttendeeEventDTO;
 import com.calendar.core.model.AttendeeIndex;
 import com.calendar.core.model.EventIndex;
 import com.calendar.core.model.RecurringAttendeeIndex;
@@ -7,7 +8,10 @@ import com.calendar.core.model.RecurringIndex;
 
 import java.util.List;
 
-public interface CalendarIndexService {
+public interface CalendarIndexService
+{
+
+    List<AttendeeEventDTO> getAttendeeEventData(Long id, Long startTime, Long endTime);
 
     Iterable<AttendeeIndex> findAllAttendees();
 
@@ -32,12 +36,4 @@ public interface CalendarIndexService {
     void saveRecurringIndices(List<RecurringIndex> recurringIndexList);
 
     void saveRecurringIndicesToDB(List<RecurringIndex> recurringIndexList);
-
-    Iterable<AttendeeIndex> findAllAttendees(Long attendeeId, Long startTime, Long endTime);
-
-    Iterable<EventIndex> findEvent(List<Long> entityId);
-
-    Iterable<RecurringIndex> findRecurringIndex(List<Long> entityId);
-
-    Iterable<RecurringAttendeeIndex> findRecurringAttendee(List<Long> recurringEntityId);
 }

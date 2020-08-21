@@ -23,5 +23,5 @@ public interface RecurringAttendeeIndexRepository extends ElasticsearchRepositor
             "         ]\n" +
             "      }\n" +
             "   }")
-    Page<RecurringAttendeeIndex> findByRecurringEntityId(List<Long> recurringEntityId, Pageable pageable);
+    Page<RecurringAttendeeIndex> findByRecurringEntityId(List<Long> recurringEntityId, Long attendeeId, Pageable pageable);
 }

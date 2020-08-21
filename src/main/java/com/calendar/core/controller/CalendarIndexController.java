@@ -5,10 +5,6 @@ import com.calendar.core.model.AttendeeIndex;
 import com.calendar.core.model.EventIndex;
 import com.calendar.core.model.RecurringAttendeeIndex;
 import com.calendar.core.model.RecurringIndex;
-import com.calendar.core.populator.AttendeeIndexPopulator;
-import com.calendar.core.populator.EventIndexPopulator;
-import com.calendar.core.populator.RecurringAttendeeIndexPopulator;
-import com.calendar.core.populator.RecurringIndexPopulator;
 import com.calendar.core.service.CalendarIndexService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,67 +14,20 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
 @RequestMapping(value = "/attendee")
 public class CalendarIndexController
 {
-
     @Autowired
     CalendarIndexService calendarIndexService;
-    @Autowired
-    AttendeeIndexPopulator attendeeIndexPopulator;
-    @Autowired
-    EventIndexPopulator eventIndexPopulator;
-    @Autowired
-    RecurringAttendeeIndexPopulator recurringAttendeeIndexPopulator;
-    @Autowired
-    RecurringIndexPopulator recurringIndexPopulator;
 
     @PostMapping(value = "/attendeeevent")
     @ResponseBody
     public List<AttendeeEventDTO> getAttendeeEventData(@RequestBody AttendeeIndex attendee)
     {
-        List<AttendeeEventDTO> attendeeEventDTOList = new ArrayList<>();
-        Iterable<AttendeeIndex> attendeeIndices = calendarIndexService.findAllAttendees(attendee.getId(), attendee.getStartTime(), attendee.getEndTime());
-        //Make single call to get all events by passing all attendee indices
-        List<Long> enitityIdList = new ArrayList<>();
-        List<Long> eventEnitityIdList = new ArrayList<>();
-        List<Long> recurringEnitityIdList = new ArrayList<>();
-        for (AttendeeIndex attendeeIndex : attendeeIndices)
-        {
-            enitityIdList.add(attendeeIndex.getEntityId());
-        }
-        AttendeeEventDTO attendeeEventDTO = new AttendeeEventDTO();
-        Iterable<EventIndex> eventIndices = calendarIndexService.findEvent(enitityIdList);
-
-        for (EventIndex eventIndex : eventIndices)
-        {
-            if (eventIndex.isRecurring())
-            {
-                eventEnitityIdList.add(eventIndex.getEntityId());
-            }
-        }
-        Iterable<RecurringIndex> recurringIndices = calendarIndexService.findRecurringIndex(eventEnitityIdList);
-
-        for (RecurringIndex recurringIndex: recurringIndices)
-        {
-            recurringEnitityIdList.add(recurringIndex.getRecurringEntityId());
-        }
-        //Pass user id as well to filter recurring attendees
-        Iterable<RecurringAttendeeIndex> recurringAttendeeIndex = calendarIndexService.findRecurringAttendee(recurringEnitityIdList);
-
-        /*recurringIndexPopulator.populate(recurringIndex, attendeeEventDTO);
-        recurringAttendeeIndexPopulator.populate(recurringAttendeeIndex, attendeeEventDTO);
-        eventIndexPopulator.populate(eventIndices, attendeeEventDTO);
-        attendeeIndexPopulator.populate(attendeeIndex, attendeeEventDTO);*/
-
-        attendeeEventDTOList.add(attendeeEventDTO);
-
-
-        return attendeeEventDTOList;
+        return calendarIndexService.getAttendeeEventData(attendee.getId(), attendee.getStartTime(), attendee.getEndTime());
     }
 
     /**
