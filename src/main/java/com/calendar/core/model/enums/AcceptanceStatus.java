@@ -3,6 +3,7 @@ package com.calendar.core.model.enums;
 public enum AcceptanceStatus {
     ACCEPTED, REJECTED, TENTATIVE
 }
+/*
 public enum ActionType {
 
     CREATE(1),
@@ -32,4 +33,4 @@ public enum ActionType {
         }
         return null;
     }
-}
+}*/

@@ -12,6 +12,6 @@ import java.util.List;
 @Repository
 public interface EventIndexJPARepository extends CrudRepository<EventIndex, String> {
 
-    @Query(value = "SELECT ei FROM EventIndex ei WHERE (ei.id IN (:entityId))")
-    Page<EventIndex> findByEntityId(List<Long> entityId, Pageable pageable);
+    @Query(value = "SELECT ei FROM EventIndex ei WHERE ei.entityId IN (:entityIdList)")
+    List<EventIndex> findAllByEntityIdIn(List<Long> entityIdList);
 }

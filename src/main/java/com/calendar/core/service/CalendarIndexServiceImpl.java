@@ -64,6 +64,7 @@ public class CalendarIndexServiceImpl implements CalendarIndexService
     {
         //Make single call to get all events by passing all attendee indices
         List<AttendeeEventDTO> attendeeEventDTOList = new ArrayList<>();
+        List<Long> enitityIdList = new ArrayList<>();
         List<Long> eventEnitityIdList = new ArrayList<>();
         List<Long> recurringEnitityIdList = new ArrayList<>();
         Map<Long, AttendeeEventDTO> attedeeIndexMap = new HashMap<>();
@@ -74,10 +75,11 @@ public class CalendarIndexServiceImpl implements CalendarIndexService
         {
             AttendeeEventDTO attendeeEventDTO = new AttendeeEventDTO();
             attendeeIndexPopulator.populate(attendeeIndex, attendeeEventDTO);
+            enitityIdList.add(attendeeIndex.getEntityId());
             attedeeIndexMap.put(attendeeIndex.getEntityId(), attendeeEventDTO);
         }
 
-        Iterable<EventIndex> eventIndices = findEvents((List<Long>) attedeeIndexMap.keySet());
+        Iterable<EventIndex> eventIndices = findEvents(enitityIdList);
 
         for (EventIndex eventIndex : eventIndices)
         {
@@ -163,7 +165,7 @@ public class CalendarIndexServiceImpl implements CalendarIndexService
             return attendeeIndexRepository.findByIdAndStartTimeAndEndTime(attendeeId, startTime, endTime, Pageable.unpaged());
         } else
         {
-            return attendeeIndexJPARepository.findByIdAndStartTimeAndEndTime(attendeeId, startTime, endTime, Pageable.unpaged());
+            return attendeeIndexJPARepository.findByIdAndStartTimeAndEndTime(attendeeId, startTime, endTime);
         }
     }
 
@@ -174,7 +176,7 @@ public class CalendarIndexServiceImpl implements CalendarIndexService
             return eventIndexRepository.findByEntityId(entityIdList, Pageable.unpaged());
         } else
         {
-            return eventIndexJPARepository.findByEntityId(entityIdList, Pageable.unpaged());
+            return eventIndexJPARepository.findAllByEntityIdIn(entityIdList);
         }
     }
 
@@ -185,7 +187,7 @@ public class CalendarIndexServiceImpl implements CalendarIndexService
             return recurringIndexRepository.findByEntityId(entityIdList, Pageable.unpaged());
         } else
         {
-            return recurringIndexJPARepository.findByEntityId(entityIdList, Pageable.unpaged());
+            return recurringIndexJPARepository.findAllByEntityIdIn(entityIdList, Pageable.unpaged());
         }
     }
 
@@ -196,7 +198,7 @@ public class CalendarIndexServiceImpl implements CalendarIndexService
             return recurringAttendeeIndexRepository.findByRecurringEntityId(recurringEntityIdList, attendeeId, Pageable.unpaged());
         } else
         {
-            return recurringAttendeeIndexJPARepository.findByRecurringEntityId(recurringEntityIdList, attendeeId, Pageable.unpaged());
+            return recurringAttendeeIndexJPARepository.findAllByRecurringEntityIdInAndAttendee(recurringEntityIdList, attendeeId);
         }
     }
 

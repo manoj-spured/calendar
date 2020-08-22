@@ -12,6 +12,6 @@ import java.util.List;
 @Repository
 public interface RecurringIndexJPARepository extends CrudRepository<RecurringIndex, String> {
 
-    @Query(value = "SELECT ri FROM RecurringIndex ri WHERE ri.id IN (:recurringEntityId)")
-    Page<RecurringIndex> findByEntityId(List<Long> entityId, Pageable pageable);
+    @Query(value = "SELECT ri FROM RecurringIndex ri WHERE ri.entityId IN (:recurringEntityId)")
+    Page<RecurringIndex> findAllByEntityIdIn(List<Long> entityId, Pageable pageable);
 }
