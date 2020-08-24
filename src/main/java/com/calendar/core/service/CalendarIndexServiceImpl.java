@@ -61,7 +61,7 @@ public class CalendarIndexServiceImpl implements CalendarIndexService
     private boolean useElasticSearch;
 
     @Override
-    public List<AttendeeEventDTO> getAttendeeEventData(Long id, Long startTime, Long endTime)
+    public List<AttendeeEventDTO> getAttendeeEventData(Long attendee, Long startTime, Long endTime)
     {
         //Make single call to get all events by passing all attendee indices
         List<AttendeeEventDTO> attendeeEventDTOList = new ArrayList<>();
@@ -71,7 +71,7 @@ public class CalendarIndexServiceImpl implements CalendarIndexService
         Map<Long, AttendeeEventDTO> attedeeIndexMap = new HashMap<>();
         Map<Long, Long> recurringAttendeeMap = new HashMap<>();
 
-        Iterable<AttendeeIndex> attendeeIndices = findAttendees(id, startTime, endTime);
+        Iterable<AttendeeIndex> attendeeIndices = findAttendees(attendee, startTime, endTime);
         for (AttendeeIndex attendeeIndex : attendeeIndices)
         {
             AttendeeEventDTO attendeeEventDTO = new AttendeeEventDTO();
@@ -106,7 +106,7 @@ public class CalendarIndexServiceImpl implements CalendarIndexService
             recurringIndexPopulator.populate(recurringIndexList, attedeeIndexMap.get(entityId));
         });
 
-        Iterable<RecurringAttendeeIndex> recurringAttendeeIndexList = findRecurringAttendees(recurringEnitityIdList, id);
+        Iterable<RecurringAttendeeIndex> recurringAttendeeIndexList = findRecurringAttendees(recurringEnitityIdList, attendee);
 
         for (RecurringAttendeeIndex recurringAttendeeIndex : recurringAttendeeIndexList)
         {
@@ -165,15 +165,15 @@ public class CalendarIndexServiceImpl implements CalendarIndexService
         recurringIndexRepository.saveAll(recurringIndexList);
     }
 
-    private Iterable<AttendeeIndex> findAttendees(Long attendeeId, Long startTime, Long endTime)
+    private Iterable<AttendeeIndex> findAttendees(Long attendee, Long startTime, Long endTime)
     {
 
         if (useElasticSearch)
         {
-            return attendeeIndexRepository.findByIdAndStartTimeAndEndTime(attendeeId, startTime, endTime, Pageable.unpaged());
+            return attendeeIndexRepository.findByIdAndStartTimeAndEndTime(attendee, startTime, endTime, Pageable.unpaged());
         } else
         {
-            return attendeeIndexJPARepository.findByIdAndStartTimeAndEndTime(attendeeId, startTime, endTime);
+            return attendeeIndexJPARepository.findAllByAttendeeId(attendee, startTime, endTime);
         }
     }
 

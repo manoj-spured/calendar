@@ -1,6 +1,5 @@
 [
   {
-    "id": 1,
     "eventType": 203,
     "entityId": 3001,
     "startTime": " ",
@@ -20,7 +19,6 @@
     "targetURL": ""
   },
   {
-    "id": 2,
     "eventType": 205,
     "entityId": 3002,
     "startTime": " ",
@@ -40,13 +38,12 @@
     "targetURL": ""
   },
   {
-    "id": 3,
     "eventType": 207,
     "entityId": 3003,
     "startTime": " ",
     "endTime": " ",
     "eventCategory": 353,
-    "isRecurring": false,
+    "isRecurring": true,
     "eventStartDate": "",
     "eventEndDate": "",
     "title": "Test Event 1",

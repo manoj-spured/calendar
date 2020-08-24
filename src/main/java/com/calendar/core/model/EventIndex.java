@@ -4,6 +4,7 @@ import com.calendar.core.model.enums.Occurrence;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.data.elasticsearch.annotations.Document;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -35,6 +36,7 @@ public class EventIndex {
     Long entityStartTime;
     Long entityEndTime;
     Occurrence occurrenceType;
+    @Column(unique = true)
     Long entityId;
     String title;
     String text;

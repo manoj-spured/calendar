@@ -15,7 +15,7 @@ public interface AttendeeIndexRepository extends ElasticsearchRepository<Attende
             "         \"must\": [\n" +
             "            {\n" +
             "               \"match\": {\n" +
-            "                  \"id\": \"?0\"\n" +
+            "                  \"attendee\": \"?0\"\n" +
             "               }\n" +
             "            },\n" +
             "            {\n" +
@@ -73,5 +73,5 @@ public interface AttendeeIndexRepository extends ElasticsearchRepository<Attende
             "         ]\n" +
             "      }\n" +
             "   }")
-    Page<AttendeeIndex> findByIdAndStartTimeAndEndTime(Long id, Long startTime,Long endTime, Pageable pageable);
+    Page<AttendeeIndex> findByIdAndStartTimeAndEndTime(Long attendee, Long startTime,Long endTime, Pageable pageable);
 }

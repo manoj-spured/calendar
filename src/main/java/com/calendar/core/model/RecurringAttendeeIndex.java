@@ -3,6 +3,7 @@ package com.calendar.core.model;
 import com.calendar.core.model.enums.AcceptanceStatus;
 import org.springframework.data.elasticsearch.annotations.Document;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -22,6 +23,7 @@ public class RecurringAttendeeIndex {
     @Id
     @GeneratedValue(strategy= GenerationType.SEQUENCE, generator="seq")
     Long id;
+    @Column(unique = true)
     Long recurringEntityId;
     Long attendee;
     AcceptanceStatus acceptanceStatus;

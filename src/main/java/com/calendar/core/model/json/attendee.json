@@ -1,6 +1,6 @@
 [
   {
-    "id": 1,
+    "attendee": 1,
     "eventType": 201,
     "entityId": 3001,
     "eventNote": " Test Event Note 1",
@@ -11,7 +11,7 @@
     "endTime": "1595907075000"
   },
   {
-    "id": 2,
+    "attendee": 2,
     "eventType": 202,
     "entityId": 3002,
     "eventNote": " Test Event Note 2",
@@ -22,7 +22,7 @@
     "endTime": "1595993475000"
   },
   {
-    "id": 3,
+    "attendee": 1,
     "eventType": 203,
     "entityId": 3003,
     "eventNote": " Test Event Note 3",
@@ -33,7 +33,7 @@
     "endTime": "1595388675000"
   },
   {
-    "id": 4,
+    "attendee": 4,
     "eventType": 204,
     "entityId": 3004,
     "eventNote": " Test Event Note 4",
@@ -44,7 +44,7 @@
     "endTime": "1595993475000"
   },
   {
-    "id": 5,
+    "attendee": 5,
     "eventType": 205,
     "entityId": 3005,
     "eventNote": " Test Event Note 5",

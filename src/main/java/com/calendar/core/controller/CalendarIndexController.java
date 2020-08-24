@@ -27,7 +27,7 @@ public class CalendarIndexController
     @ResponseBody
     public List<AttendeeEventDTO> getAttendeeEventData(@RequestBody AttendeeIndex attendee)
     {
-        return calendarIndexService.getAttendeeEventData(attendee.getId(), attendee.getStartTime(), attendee.getEndTime());
+        return calendarIndexService.getAttendeeEventData(attendee.getAttendee(), attendee.getStartTime(), attendee.getEndTime());
     }
 
     /**
@@ -158,7 +158,7 @@ public class CalendarIndexController
      * @param recurringAttendeeIndexList recurringAttendeeIndexList
      * @return Save response
      */
-    @PostMapping(value = "/saveRecurringattendeesToDB")
+    @PostMapping(value = "/saveRecurringAttendeesToDB")
     public String saveRecurringAttendeesToDB(@RequestBody List<RecurringAttendeeIndex> recurringAttendeeIndexList)
     {
         calendarIndexService.saveRecurringAttendeesToDB(recurringAttendeeIndexList);
@@ -171,7 +171,7 @@ public class CalendarIndexController
      * @param recurringIndexList recurringIndexList
      * @return Save response
      */
-    @PostMapping(value = "/saveRecurringindicesToDB")
+    @PostMapping(value = "/saveRecurringIndicesToDB")
     public String saveRecurringIndicesToDB(@RequestBody List<RecurringIndex> recurringIndexList)
     {
         calendarIndexService.saveRecurringIndicesToDB(recurringIndexList);
