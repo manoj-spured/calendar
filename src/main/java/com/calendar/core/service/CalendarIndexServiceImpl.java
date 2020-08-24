@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class CalendarIndexServiceImpl implements CalendarIndexService
@@ -91,13 +92,20 @@ public class CalendarIndexServiceImpl implements CalendarIndexService
         }
         Iterable<RecurringIndex> recurringIndices = findRecurringIndices(eventEnitityIdList);
 
+        Map<Long, List<RecurringIndex>> recurringIndexMap = new HashMap<>();
+
         for (RecurringIndex recurringIndex : recurringIndices)
         {
-            recurringIndexPopulator.populate(recurringIndex, attedeeIndexMap.get(recurringIndex.getEntityId()));
-            recurringEnitityIdList.add(recurringIndex.getRecurringEntityId());
-            recurringAttendeeMap.put(recurringIndex.getEntityId(), recurringIndex.getRecurringEntityId());
+            recurringAttendeeMap.put(recurringIndex.getRecurringEntityId(), recurringIndex.getEntityId());
+
+            List<RecurringIndex> recurringIndexList = new ArrayList<>();
+            recurringIndexMap.getOrDefault(recurringIndex.getEntityId(), recurringIndexList).add(recurringIndex);
         }
-        //Pass user id as well to filter recurring attendees
+
+        recurringIndexMap.forEach((entityId, recurringIndexList) -> {
+            recurringIndexPopulator.populate(recurringIndexList, attedeeIndexMap.get(entityId));
+        });
+
         Iterable<RecurringAttendeeIndex> recurringAttendeeIndexList = findRecurringAttendees(recurringEnitityIdList, id);
 
         for (RecurringAttendeeIndex recurringAttendeeIndex : recurringAttendeeIndexList)

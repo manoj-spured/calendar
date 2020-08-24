@@ -6,6 +6,7 @@ import com.calendar.core.data.RecurringEventInfoDTO;
 import com.calendar.core.model.RecurringAttendeeIndex;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -17,8 +18,11 @@ public class RecurringAttendeeIndexPopulator {
         attendeeResponseDTO.set_type("CalendarEventUserResponse");
         attendeeResponseDTO.setAttendeeStatus(Objects.nonNull(recurringAttendeeIndex.getAcceptanceStatus()) ? recurringAttendeeIndex.getAcceptanceStatus().toString() : null);
         attendeeResponseDTO.setEventNote(recurringAttendeeIndex.getEventNote());
-        RecurringEventInfoDTO recurringEventInfoDTO = attendeeEventDTO.getRecurringEventInfoDTO();
-        recurringEventInfoDTO.setAttendeeResponseDTO(attendeeResponseDTO);
-        attendeeEventDTO.setRecurringEventInfoDTO(recurringEventInfoDTO);
+        List<RecurringEventInfoDTO> recurringEventInfoDTOList = attendeeEventDTO.getRecurringEventInfoDTOList();
+        for (RecurringEventInfoDTO recurringEventInfoDTO : recurringEventInfoDTOList)
+        {
+            recurringEventInfoDTO.setAttendeeResponseDTO(attendeeResponseDTO);
+        }
+        attendeeEventDTO.setRecurringEventInfoDTOList(recurringEventInfoDTOList);
     }
 }

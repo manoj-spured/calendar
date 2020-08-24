@@ -1,6 +1,7 @@
 package com.calendar.core.model;
 
 import com.calendar.core.model.enums.Occurrence;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.data.elasticsearch.annotations.Document;
 
 import javax.persistence.Entity;
@@ -29,6 +30,7 @@ public class EventIndex {
     Long eventCategory;
     Long startTime;
     Long endTime;
+    @JsonProperty
     boolean isRecurring;
     Long entityStartTime;
     Long entityEndTime;

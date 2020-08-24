@@ -1,5 +1,7 @@
 package com.calendar.core.data;
 
+import java.util.List;
+
 public class AttendeeEventDTO
 {
     String _type;
@@ -22,7 +24,7 @@ public class AttendeeEventDTO
     String siteUrl;
     String status;
     String targetUrl;
-    RecurringEventInfoDTO recurringEventInfoDTO;
+    List<RecurringEventInfoDTO> recurringEventInfoDTOList;
 
     public String get_type() {
         return _type;
@@ -184,11 +186,11 @@ public class AttendeeEventDTO
         this.targetUrl = targetUrl;
     }
 
-    public RecurringEventInfoDTO getRecurringEventInfoDTO() {
-        return recurringEventInfoDTO;
+    public List<RecurringEventInfoDTO> getRecurringEventInfoDTOList() {
+        return recurringEventInfoDTOList;
     }
 
-    public void setRecurringEventInfoDTO(RecurringEventInfoDTO recurringEventInfoDTO) {
-        this.recurringEventInfoDTO = recurringEventInfoDTO;
+    public void setRecurringEventInfoDTOList(List<RecurringEventInfoDTO> recurringEventInfoDTOList) {
+        this.recurringEventInfoDTOList = recurringEventInfoDTOList;
     }
 }
