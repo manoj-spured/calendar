@@ -1,7 +1,10 @@
 package com.calendar.core.data;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
 import java.util.List;
 
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "_type")
 public class AttendeeEventDTO
 {
     String _type;

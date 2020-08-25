@@ -63,7 +63,6 @@ public class CalendarIndexServiceImpl implements CalendarIndexService
     @Override
     public List<AttendeeEventDTO> getAttendeeEventData(Long attendee, Long startTime, Long endTime)
     {
-        //Make single call to get all events by passing all attendee indices
         List<AttendeeEventDTO> attendeeEventDTOList = new ArrayList<>();
         List<Long> enitityIdList = new ArrayList<>();
         List<Long> eventEnitityIdList = new ArrayList<>();
@@ -97,9 +96,8 @@ public class CalendarIndexServiceImpl implements CalendarIndexService
         for (RecurringIndex recurringIndex : recurringIndices)
         {
             recurringAttendeeMap.put(recurringIndex.getRecurringEntityId(), recurringIndex.getEntityId());
-
-            List<RecurringIndex> recurringIndexList = new ArrayList<>();
-            recurringIndexMap.getOrDefault(recurringIndex.getEntityId(), recurringIndexList).add(recurringIndex);
+            recurringEnitityIdList.add(recurringIndex.getRecurringEntityId());
+            recurringIndexMap.computeIfAbsent(recurringIndex.getEntityId(), recurringIndexList -> new ArrayList<>()).add(recurringIndex);
         }
 
         recurringIndexMap.forEach((entityId, recurringIndexList) -> {

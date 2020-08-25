@@ -13,7 +13,7 @@
   },
   {
     "recurringEntityId": 203,
-    "attendee": 3,
+    "attendee": 1,
     "acceptanceStatus": "ACCEPTED",
     "eventNote": "Test note"
   },
