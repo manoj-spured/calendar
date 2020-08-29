@@ -1,12 +1,15 @@
 package com.calendar.core.controller;
 
 import com.calendar.core.data.AttendeeEventDTO;
+import com.calendar.core.data.CalendarSaveRequestDTO;
 import com.calendar.core.model.AttendeeIndex;
 import com.calendar.core.model.EventIndex;
 import com.calendar.core.model.RecurringAttendeeIndex;
 import com.calendar.core.model.RecurringIndex;
 import com.calendar.core.service.CalendarIndexService;
+import com.calendar.core.service.CalendarSaveService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,12 +25,24 @@ public class CalendarIndexController
 {
     @Autowired
     CalendarIndexService calendarIndexService;
+    @Autowired
+    CalendarSaveService calendarSaveService;
 
     @PostMapping(value = "/attendeeevent")
     @ResponseBody
     public List<AttendeeEventDTO> getAttendeeEventData(@RequestBody AttendeeIndex attendee)
     {
         return calendarIndexService.getAttendeeEventData(attendee.getAttendee(), attendee.getStartTime(), attendee.getEndTime());
+    }
+
+    @PostMapping(value = "/save-calendar-event")
+    public String saveCalendarEvent(CalendarSaveRequestDTO calendarSaveRequestDTO)
+    {
+        if (!calendarSaveService.saveCalendarEvent(calendarSaveRequestDTO).getStatusCode().equals(HttpStatus.ACCEPTED))
+        {
+            return "Bad Request";
+        }
+        return "Success";
     }
 
     /**
