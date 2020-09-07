@@ -1,12 +1,13 @@
 package com.calendar.core.data;
 
 import com.calendar.core.model.enums.EventType;
+import com.spured.shared.model.post.PostSection;
 
 public class CalendarSaveRequestDTO
 {
     EventType eventType;
     Long postId;
-    Long postSection;
+    PostSection postSection;
     Long boardId;
     Long courseId;
     Long groupId;
@@ -32,12 +33,12 @@ public class CalendarSaveRequestDTO
         this.postId = postId;
     }
 
-    public Long getPostSection()
+    public PostSection getPostSection()
     {
         return postSection;
     }
 
-    public void setPostSection(Long postSection)
+    public void setPostSection(PostSection postSection)
     {
         this.postSection = postSection;
     }

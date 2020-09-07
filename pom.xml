@@ -81,7 +81,16 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-elasticsearch</artifactId>
         </dependency>-->
-
+        <dependency>
+            <groupId>com.spured.core.service.client</groupId>
+            <artifactId>core-service-client</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.spured.profiles.service.client</groupId>
+            <artifactId>profiles-service-client</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
     <build>
