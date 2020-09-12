@@ -2,6 +2,7 @@ package com.calendar.core.model;
 
 import com.calendar.core.model.enums.AcceptanceStatus;
 import com.calendar.core.model.enums.ResponseStatus;
+import com.spured.shared.model.post.PostType;
 import org.springframework.data.elasticsearch.annotations.Document;
 
 import javax.persistence.Column;
@@ -11,7 +12,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
 
 // Elastic search annotation.
 @Document(indexName= "attendee", type= "AttendeeIndex")
@@ -26,7 +26,7 @@ public class AttendeeIndex {
     @GeneratedValue(strategy= GenerationType.SEQUENCE, generator="seq")
     Long id;
     Long attendee;
-    Long eventType;
+    PostType eventType;
     @Column(unique = true)
     Long entityId;
     String eventNote;
@@ -54,11 +54,11 @@ public class AttendeeIndex {
         this.attendee = attendee;
     }
 
-    public Long getEventType() {
+    public PostType getEventType() {
         return eventType;
     }
 
-    public void setEventType(Long eventType) {
+    public void setEventType(PostType eventType) {
         this.eventType = eventType;
     }
 

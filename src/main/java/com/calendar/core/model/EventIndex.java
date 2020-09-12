@@ -2,6 +2,7 @@ package com.calendar.core.model;
 
 import com.calendar.core.model.enums.Occurrence;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.spured.shared.model.post.PostType;
 import org.springframework.data.elasticsearch.annotations.Document;
 
 import javax.persistence.Column;
@@ -27,7 +28,7 @@ public class EventIndex {
     Long boardId;
     Long courseId;
     Long groupId;
-    Long eventType;
+    PostType eventType;
     Long eventCategory;
     Long startTime;
     Long endTime;
@@ -80,11 +81,11 @@ public class EventIndex {
         this.groupId = groupId;
     }
 
-    public Long getEventType() {
+    public PostType getEventType() {
         return eventType;
     }
 
-    public void setEventType(Long eventType) {
+    public void setEventType(PostType eventType) {
         this.eventType = eventType;
     }
 
