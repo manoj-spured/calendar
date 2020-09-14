@@ -22,9 +22,9 @@ public class EventIndex {
 
     private static final long serialVersionUID = 1L;
 
-    @Id
+    @Column(unique = true)
     @GeneratedValue(strategy= GenerationType.SEQUENCE, generator="seq")
-    Long id;
+    Long entityId;
     Long boardId;
     Long courseId;
     Long groupId;
@@ -37,8 +37,6 @@ public class EventIndex {
     Long entityStartTime;
     Long entityEndTime;
     Occurrence occurrenceType;
-    @Column(unique = true)
-    Long entityId;
     String title;
     String text;
     Long hostId;
@@ -48,14 +46,7 @@ public class EventIndex {
     String siteUrl;
     String status;
     String targetURL;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
+    Long entityReferenceId;
 
     public Long getBoardId() {
         return boardId;
