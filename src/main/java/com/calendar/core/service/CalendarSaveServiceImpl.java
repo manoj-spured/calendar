@@ -8,6 +8,8 @@ import com.calendar.core.jparepository.RecurringIndexJPARepository;
 import com.calendar.core.model.AttendeeIndex;
 import com.calendar.core.model.EventIndex;
 import com.spured.core.models.post.BoardPost;
+import com.spured.core.models.post.GroupPost;
+import com.spured.core.models.post.Post;
 import com.spured.core.response.BasePostsResponse;
 import com.spured.core.service.client.CoreServiceClient;
 import com.spured.profile.model.UserBasicProfile;
@@ -37,6 +39,13 @@ public class CalendarSaveServiceImpl implements CalendarSaveService
     @Override
     public ResponseEntity<HttpStatus> saveCalendarEvent(CalendarSaveRequestDTO calendarSaveRequestDTO)
     {
+/*
+
+        no starttime for quiz and assignment -> consider created time
+        they are mandatory for meeting
+        compare start and end time to create separate events - then 2 different entityIds
+*/
+
         switch (calendarSaveRequestDTO.getEventType())
         {
             case ASSIGNMENT:
@@ -59,16 +68,28 @@ public class CalendarSaveServiceImpl implements CalendarSaveService
                 {
                     return new ResponseEntity(HttpStatus.NOT_FOUND);
                 }
+
                 //check if board post or group post
-                BoardPost boardPost = (BoardPost) postResponse.getPosts().get(0);
-                //If group post - we get only groupId
+                if (postResponse.getPosts().get(0) instanceof BoardPost)
+                {
+                    BoardPost boardPost = (BoardPost) postResponse.getPosts().get(0);
+                    boardPost.getBoardId();
+                    boardPost.getCourseId();
+                    //TODO: pass boardId and courseId to get users
+                }
+                else if (postResponse.getPosts().get(0) instanceof GroupPost)
+                {
+                    GroupPost groupPost = (GroupPost) postResponse.getPosts().get(0);
+                    groupPost.getGroupId();
+                    //TODO: pass only groupId to get users
+                }
 
                 BoardPost tempBoardPost = new BoardPost();
                 tempBoardPost.setBoardId(1234);
                 tempBoardPost.setPostType(PostType.ASSIGNMENT);
                 tempBoardPost.setPostTitle("testPostTitle");
                 tempBoardPost.setPostText("testPostText");
-                tempBoardPost.setCreateTime(new Timestamp(12342322));
+                tempBoardPost.setCreateTime(new Timestamp(123423225));
 
                 //TODO: Fetch the user and faculty info from course/course-users by passing boardId OR boardId+courseID OR only groupId - 3 different services
                 List<UserBasicProfile> tempUserBasicProfileList = new ArrayList<>();
@@ -115,24 +136,35 @@ public class CalendarSaveServiceImpl implements CalendarSaveService
      */
     private void createMeetingEvent(BoardPost postInfo, List<UserBasicProfile> userBasicProfileList)
     {
-        Long entityId = (long) new Random().nextInt();
-
         EventIndex eventIndex = new EventIndex();
-        eventIndex.setEntityId(entityId);
         eventIndex.setBoardId(Long.valueOf(postInfo.getBoardId()));
-        eventIndex.setStartTime(postInfo.getCreateTime().getTime());
+        eventIndex.setCourseId(Long.valueOf(postInfo.getCourseId()));
+        if (postInfo.getPostType().equals(PostType.ASSIGNMENT) || postInfo.getPostType().equals(PostType.QUIZ))
+        {
+            eventIndex.setStartTime(postInfo.getCreateTime().getTime());
+        }
+        else if (postInfo.getPostType().equals(PostType.MEET))
+        {
+            eventIndex.setStartTime(postInfo.getMeeting().getStartTime().getTime());
+            eventIndex.setEndTime(postInfo.getMeeting().getEndTime().getTime());
+        }
+
         eventIndex.setEventType(postInfo.getPostType());
         eventIndex.setTitle(postInfo.getPostTitle());
         eventIndex.setText(postInfo.getPostText());
+        eventIndex.setEntityReferenceId(Long.valueOf(postInfo.getPostId()));
         eventIndexJPARepository.save(eventIndex);
+
+        Long entityId = eventIndex.getEntityId();
 
         for (UserBasicProfile user: userBasicProfileList)
         {
             AttendeeIndex attendeeIndex = new AttendeeIndex();
             attendeeIndex.setAttendee(Long.valueOf(user.getUserId()));
             attendeeIndex.setEventType(postInfo.getPostType());
-            attendeeIndex.setStartTime(postInfo.getCreateTime().getTime());
             attendeeIndex.setEntityId(entityId);
+            attendeeIndex.setStartTime(eventIndex.getStartTime());
+            attendeeIndex.setEndTime(eventIndex.getEndTime());
             attendeeIndexJPARepository.save(attendeeIndex);
         }
     }

@@ -215,4 +215,14 @@ public class EventIndex {
     public void setTargetURL(String targetURL) {
         this.targetURL = targetURL;
     }
+
+    public Long getEntityReferenceId()
+    {
+        return entityReferenceId;
+    }
+
+    public void setEntityReferenceId(Long entityReferenceId)
+    {
+        this.entityReferenceId = entityReferenceId;
+    }
 }
