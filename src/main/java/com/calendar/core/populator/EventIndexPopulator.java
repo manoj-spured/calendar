@@ -31,7 +31,7 @@ public class EventIndexPopulator {
 
         AttendeeProfileDTO hostProfileDTO = new AttendeeProfileDTO();
         hostProfileDTO.set_type("UserBasicProfile");
-        hostProfileDTO.setUserId(Objects.nonNull(eventIndex.getId()) ? eventIndex.getId().toString() : null);
+        hostProfileDTO.setUserId(Objects.nonNull(eventIndex.getEntityId()) ? eventIndex.getEntityId().toString() : null);
         attendeeEventDTO.setHostProfile(hostProfileDTO);
     }
 }

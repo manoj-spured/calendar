@@ -22,8 +22,11 @@ public class EventIndex {
 
     private static final long serialVersionUID = 1L;
 
+    @Id
     @Column(unique = true)
     @GeneratedValue(strategy= GenerationType.SEQUENCE, generator="seq")
+    Long id;
+    @GeneratedValue(strategy=GenerationType.AUTO)
     Long entityId;
     Long boardId;
     Long courseId;

@@ -17,14 +17,15 @@ import com.spured.shared.model.post.PostType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Random;
 
+@Service
 public class CalendarSaveServiceImpl implements CalendarSaveService
 {
     @Autowired
@@ -59,7 +60,7 @@ public class CalendarSaveServiceImpl implements CalendarSaveService
                     return new ResponseEntity(HttpStatus.BAD_REQUEST);
                 }
                 //TODO: Fetch the post info from core/get-post get
-                BasePostsResponse postResponse = CoreServiceClient.getUnifiedPost(calendarSaveRequestDTO.getPostSection(), Math.toIntExact(calendarSaveRequestDTO.getPostId()));
+                /*BasePostsResponse postResponse = CoreServiceClient.getUnifiedPost(calendarSaveRequestDTO.getPostSection(), Math.toIntExact(calendarSaveRequestDTO.getPostId()));
                 if(Objects.isNull(postResponse) || Objects.nonNull(postResponse.getError()))
                 {
                     return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -82,10 +83,12 @@ public class CalendarSaveServiceImpl implements CalendarSaveService
                     GroupPost groupPost = (GroupPost) postResponse.getPosts().get(0);
                     groupPost.getGroupId();
                     //TODO: pass only groupId to get users
-                }
+                }*/
 
                 BoardPost tempBoardPost = new BoardPost();
+                tempBoardPost.setPostId(2343);
                 tempBoardPost.setBoardId(1234);
+                tempBoardPost.setCourseId(8765);
                 tempBoardPost.setPostType(PostType.ASSIGNMENT);
                 tempBoardPost.setPostTitle("testPostTitle");
                 tempBoardPost.setPostText("testPostText");

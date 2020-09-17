@@ -36,7 +36,7 @@ public class CalendarIndexController
     }
 
     @PostMapping(value = "/save-calendar-event")
-    public String saveCalendarEvent(CalendarSaveRequestDTO calendarSaveRequestDTO)
+    public String saveCalendarEvent(@RequestBody CalendarSaveRequestDTO calendarSaveRequestDTO)
     {
         if (!calendarSaveService.saveCalendarEvent(calendarSaveRequestDTO).getStatusCode().equals(HttpStatus.ACCEPTED))
         {
