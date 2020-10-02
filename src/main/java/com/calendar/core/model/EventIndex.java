@@ -26,7 +26,7 @@ public class EventIndex {
     @Column(unique = true)
     @GeneratedValue(strategy= GenerationType.SEQUENCE, generator="seq")
     Long id;
-    @GeneratedValue(strategy=GenerationType.AUTO)
+    @GeneratedValue(strategy= GenerationType.AUTO)
     Long entityId;
     Long boardId;
     Long courseId;
