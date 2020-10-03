@@ -1,5 +1,6 @@
 package com.calendar.core.model;
 
+import com.calendar.core.model.enums.EventType;
 import com.calendar.core.model.enums.Occurrence;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.spured.shared.model.post.PostType;
@@ -31,7 +32,7 @@ public class EventIndex {
     Long boardId;
     Long courseId;
     Long groupId;
-    PostType eventType;
+    EventType eventType;
     Long eventCategory;
     Long startTime;
     Long endTime;
@@ -75,11 +76,11 @@ public class EventIndex {
         this.groupId = groupId;
     }
 
-    public PostType getEventType() {
+    public EventType getEventType() {
         return eventType;
     }
 
-    public void setEventType(PostType eventType) {
+    public void setEventType(EventType eventType) {
         this.eventType = eventType;
     }
 

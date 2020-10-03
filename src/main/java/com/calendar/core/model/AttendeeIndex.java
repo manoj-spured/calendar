@@ -1,6 +1,7 @@
 package com.calendar.core.model;
 
 import com.calendar.core.model.enums.AcceptanceStatus;
+import com.calendar.core.model.enums.EventType;
 import com.calendar.core.model.enums.ResponseStatus;
 import com.spured.shared.model.post.PostType;
 import org.springframework.data.elasticsearch.annotations.Document;
@@ -26,7 +27,7 @@ public class AttendeeIndex {
     @GeneratedValue(strategy= GenerationType.SEQUENCE, generator="seq")
     Long id;
     Long attendee;
-    PostType eventType;
+    EventType eventType;
     @Column(unique = true)
     Long entityId;
     String eventNote;
@@ -54,11 +55,11 @@ public class AttendeeIndex {
         this.attendee = attendee;
     }
 
-    public PostType getEventType() {
+    public EventType getEventType() {
         return eventType;
     }
 
-    public void setEventType(PostType eventType) {
+    public void setEventType(EventType eventType) {
         this.eventType = eventType;
     }
 

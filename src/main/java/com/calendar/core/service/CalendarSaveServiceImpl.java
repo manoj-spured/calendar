@@ -7,6 +7,8 @@ import com.calendar.core.jparepository.RecurringAttendeeIndexJPARepository;
 import com.calendar.core.jparepository.RecurringIndexJPARepository;
 import com.calendar.core.model.AttendeeIndex;
 import com.calendar.core.model.EventIndex;
+import com.calendar.core.model.enums.EventType;
+import com.calendar.core.model.enums.Occurrence;
 import com.curriculum.core.data.CourseBoardData;
 import com.curriculum.core.data.CourseBoardProfileRequest;
 import com.curriculum.core.data.CourseFacultyMappingData;
@@ -99,8 +101,8 @@ public class CalendarSaveServiceImpl implements CalendarSaveService
                 break;
 
             case COURSE:
-                if (Objects.nonNull(calendarSaveRequestDTO.getCourseId())
-                        && Objects.nonNull(calendarSaveRequestDTO.getBoardId()))
+                if (Objects.isNull(calendarSaveRequestDTO.getCourseId())
+                        || Objects.isNull(calendarSaveRequestDTO.getBoardId()))
                 {
                     return new ResponseEntity(HttpStatus.BAD_REQUEST);
                 }
@@ -117,9 +119,9 @@ public class CalendarSaveServiceImpl implements CalendarSaveService
                 break;
 
             case TIMETABLE:
-                if (Objects.nonNull(calendarSaveRequestDTO.getCourseId())
-                        && Objects.nonNull(calendarSaveRequestDTO.getBoardId())
-                        && Objects.nonNull(calendarSaveRequestDTO.getScheduleId()))
+                if (Objects.isNull(calendarSaveRequestDTO.getCourseId())
+                        || Objects.isNull(calendarSaveRequestDTO.getBoardId())
+                        || Objects.isNull(calendarSaveRequestDTO.getScheduleId()))
                 {
                     return new ResponseEntity(HttpStatus.BAD_REQUEST);
                 }
@@ -148,7 +150,13 @@ public class CalendarSaveServiceImpl implements CalendarSaveService
         eventIndex.setCourseId(Long.valueOf(postInfo.getCourseId()));
         if (postInfo.getPostType().equals(PostType.ASSIGNMENT) || postInfo.getPostType().equals(PostType.QUIZ))
         {
-            eventIndex.setStartTime(postInfo.getCreateTime().getTime());
+            //TODO: If start is not available make it start time as 00:00 of the creation date
+            eventIndex.setStartTime(Objects.nonNull(postInfo.getQuestionGroupResponse().getStartTime())
+                    ? postInfo.getQuestionGroupResponse().getStartTime().getTime() : postInfo.getCreateTime().getTime());
+
+            //TODO: Check if end exists and falls on different days, then create 2 events, If end time is not available then add 30 mins to start time
+            eventIndex.setEndTime(Objects.nonNull(postInfo.getQuestionGroupResponse().getEndTime())
+                    ? postInfo.getQuestionGroupResponse().getEndTime().getTime() : postInfo.getCreateTime().getTime() + 30);
         }
         else if (postInfo.getPostType().equals(PostType.MEET))
         {
@@ -156,24 +164,27 @@ public class CalendarSaveServiceImpl implements CalendarSaveService
             eventIndex.setEndTime(postInfo.getMeeting().getEndTime().getTime());
         }
 
-        eventIndex.setEventType(postInfo.getPostType());
+        //TODO: Check the post type and set the event type accordingly
+        eventIndex.setEventType(EventType.MEETING);
         eventIndex.setTitle(postInfo.getPostTitle());
         eventIndex.setText(postInfo.getPostText());
         eventIndex.setEntityReferenceId(Long.valueOf(postInfo.getPostId()));
         eventIndexJPARepository.save(eventIndex);
 
-        createAttendeesForEvent(userBasicProfileList, eventIndex, postInfo.getPostType());
+        createAttendeesForEvent(userBasicProfileList, eventIndex, EventType.MEETING);
     }
 
     private void createCourseEvent(CourseBoardData courseBoardData, List<UserBasicProfile> userBasicProfileList)
     {
+        //TODO: If start and end dates are not available, log and return error as these are mandatory
+        //If only 1 is available create only 1 entry
         List<EventIndex> eventIndices = new ArrayList<>();
         eventIndices.add(createCourseEvent(courseBoardData));
         eventIndices.add(createCourseEvent(courseBoardData));
 
         for (EventIndex eventIndex: eventIndices)
         {
-            createAttendeesForEvent(userBasicProfileList, eventIndex, PostType.POST);
+            createAttendeesForEvent(userBasicProfileList, eventIndex, EventType.COURSE);
         }
     }
 
@@ -185,15 +196,16 @@ public class CalendarSaveServiceImpl implements CalendarSaveService
         //TODO: Need to change time formats
         eventIndex.setStartTime(Long.valueOf(courseBoardData.getCourseStartDate()));
         eventIndex.setEndTime(Long.valueOf(courseBoardData.getCourseEndDate()));
-        eventIndex.setEventType(PostType.POST);
-        //TODO: Need course title
+        eventIndex.setOccurrenceType(Occurrence.START);
+        eventIndex.setEventType(EventType.COURSE);
+        //TODO: Need course title - ask vikas to add (new call to get course info with course id)
         eventIndex.setTitle(String.valueOf(courseBoardData.getCourseId()));
         eventIndex.setEntityReferenceId(Long.valueOf(courseBoardData.getCourseBoardUID()));
         eventIndexJPARepository.save(eventIndex);
         return eventIndex;
     }
 
-    private void createAttendeesForEvent(List<UserBasicProfile> tempUserBasicProfileList, EventIndex eventIndex, PostType post)
+    private void createAttendeesForEvent(List<UserBasicProfile> tempUserBasicProfileList, EventIndex eventIndex, EventType eventType)
     {
         Long entityId = eventIndex.getEntityId();
 
@@ -201,7 +213,7 @@ public class CalendarSaveServiceImpl implements CalendarSaveService
         {
             AttendeeIndex attendeeIndex = new AttendeeIndex();
             attendeeIndex.setAttendee(Long.valueOf(user.getUserId()));
-            attendeeIndex.setEventType(post);
+            attendeeIndex.setEventType(eventType);
             attendeeIndex.setEntityId(entityId);
             attendeeIndex.setStartTime(eventIndex.getStartTime());
             attendeeIndex.setEndTime(eventIndex.getEndTime());
@@ -241,6 +253,10 @@ public class CalendarSaveServiceImpl implements CalendarSaveService
         if (Objects.nonNull(curriculumResponse.getError()))
         {
             courseBoardData = (CourseBoardData) curriculumResponse.getResponseObject();
+        }
+        else
+        {
+            //TODO: Log error
         }
         return courseBoardData;
     }
