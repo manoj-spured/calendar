@@ -8,7 +8,7 @@ import com.calendar.core.jparepository.RecurringIndexJPARepository;
 import com.calendar.core.model.AttendeeIndex;
 import com.calendar.core.model.EventIndex;
 import com.calendar.core.model.enums.EventType;
-import com.calendar.core.model.enums.Occurrence;
+import com.calendar.core.model.enums.OccurrenceType;
 import com.curriculum.core.data.CourseBoardData;
 import com.curriculum.core.data.CourseBoardProfileRequest;
 import com.curriculum.core.data.CourseFacultyMappingData;
@@ -18,11 +18,10 @@ import com.curriculum.core.data.CurriculumResponse;
 import com.curriculum.service.client.CurriculumServiceClient;
 import com.spured.core.models.post.BoardPost;
 import com.spured.core.models.post.GroupPost;
+import com.spured.core.models.post.question.QuestionGroupResponse;
 import com.spured.core.response.BasePostsResponse;
 import com.spured.core.service.client.CoreServiceClient;
 import com.spured.profile.model.UserBasicProfile;
-import com.spured.profile.response.GetProfilesResponse;
-import com.spured.profiles.service.client.UserProfileServiceClient;
 import com.spured.shared.model.post.PostType;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +31,7 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -52,11 +52,11 @@ public class CalendarSaveServiceImpl implements CalendarSaveService
     @Override
     public ResponseEntity<HttpStatus> saveCalendarEvent(CalendarSaveRequestDTO calendarSaveRequestDTO)
     {
-        List<UserBasicProfile> tempUserBasicProfileList = getTempUserBasicProfiles();
+        Set<Integer> tempUserBasicProfileList = getTempUserBasicProfiles();
 
         CourseBoardProfileRequest courseBoardProfileRequest = new CourseBoardProfileRequest();
         CourseBoardData courseBoardData;
-        List<UserBasicProfile> userBasicProfileList = new ArrayList<>();
+        Set<Integer> userBasicProfileList = new HashSet<>();
 
         /* no starttime for quiz and assignment -> consider created time
         they are mandatory for meeting
@@ -143,77 +143,126 @@ public class CalendarSaveServiceImpl implements CalendarSaveService
      * @param postInfo Post related info
      * @param userBasicProfileList Students and Faculty info
      */
-    private void createMeetingEvent(BoardPost postInfo, List<UserBasicProfile> userBasicProfileList)
+    private void createMeetingEvent(BoardPost postInfo, Set<Integer> userBasicProfileList)
+    {
+        QuestionGroupResponse questionGroupResponse = postInfo.getQuestionGroupResponse();
+        Timestamp startTime = questionGroupResponse.getStartTime();
+        Timestamp endTime = questionGroupResponse.getStartTime();
+
+        //TODO: If start is not available make it start time as 00:00 of the creation date
+        //TODO: Check if end exists and falls on different days, then create 2 events, If end time is not available then add 30 mins to start time
+
+        if (postInfo.getPostType().equals(PostType.MEET))
+        {
+            startTime = postInfo.getMeeting().getStartTime();
+            endTime = postInfo.getMeeting().getEndTime();
+        }
+
+        if (Objects.nonNull(startTime) && Objects.nonNull(endTime))
+        {
+            if (startTime.getTime() - endTime.getTime() > 1)
+            {
+                createMeetingEvent(postInfo, userBasicProfileList, startTime, endTime, OccurrenceType.BEGIN);
+                createMeetingEvent(postInfo, userBasicProfileList, startTime, endTime, OccurrenceType.END);
+            }
+            else
+            {
+                createMeetingEvent(postInfo, userBasicProfileList, startTime, endTime, null);
+            }
+        }
+        else
+        {
+            createMeetingEvent(postInfo, userBasicProfileList, postInfo.getCreateTime(),null , null);
+        }
+    }
+
+    private void createMeetingEvent(BoardPost postInfo, Set<Integer> userBasicProfileList, Timestamp startTime, Timestamp endTime, OccurrenceType occurrenceType)
     {
         EventIndex eventIndex = new EventIndex();
+        eventIndex.setStartTime(startTime.getTime());
+        eventIndex.setEndTime(endTime.getTime());
         eventIndex.setBoardId(Long.valueOf(postInfo.getBoardId()));
         eventIndex.setCourseId(Long.valueOf(postInfo.getCourseId()));
-        if (postInfo.getPostType().equals(PostType.ASSIGNMENT) || postInfo.getPostType().equals(PostType.QUIZ))
-        {
-            //TODO: If start is not available make it start time as 00:00 of the creation date
-            eventIndex.setStartTime(Objects.nonNull(postInfo.getQuestionGroupResponse().getStartTime())
-                    ? postInfo.getQuestionGroupResponse().getStartTime().getTime() : postInfo.getCreateTime().getTime());
-
-            //TODO: Check if end exists and falls on different days, then create 2 events, If end time is not available then add 30 mins to start time
-            eventIndex.setEndTime(Objects.nonNull(postInfo.getQuestionGroupResponse().getEndTime())
-                    ? postInfo.getQuestionGroupResponse().getEndTime().getTime() : postInfo.getCreateTime().getTime() + 30);
-        }
-        else if (postInfo.getPostType().equals(PostType.MEET))
-        {
-            eventIndex.setStartTime(postInfo.getMeeting().getStartTime().getTime());
-            eventIndex.setEndTime(postInfo.getMeeting().getEndTime().getTime());
-        }
-
         //TODO: Check the post type and set the event type accordingly
-        eventIndex.setEventType(EventType.MEETING);
+        switch (postInfo.getPostType())
+        {
+            case QUIZ:
+                eventIndex.setEventType(EventType.QUIZ);
+                break;
+            case MEET:
+                eventIndex.setEventType(EventType.MEETING);
+                break;
+            case ASSIGNMENT:
+                eventIndex.setEventType(EventType.ASSIGNMENT);
+                break;
+            default:
+                break;
+        }
+        eventIndex.setOccurrenceType(occurrenceType);
         eventIndex.setTitle(postInfo.getPostTitle());
         eventIndex.setText(postInfo.getPostText());
         eventIndex.setEntityReferenceId(Long.valueOf(postInfo.getPostId()));
         eventIndexJPARepository.save(eventIndex);
 
-        createAttendeesForEvent(userBasicProfileList, eventIndex, EventType.MEETING);
+        createAttendeesForEvent(userBasicProfileList, eventIndex);
     }
 
-    private void createCourseEvent(CourseBoardData courseBoardData, List<UserBasicProfile> userBasicProfileList)
+    private void createCourseEvent(CourseBoardData courseBoardData, Set<Integer> userBasicProfileList)
     {
         //TODO: If start and end dates are not available, log and return error as these are mandatory
         //If only 1 is available create only 1 entry
-        List<EventIndex> eventIndices = new ArrayList<>();
-        eventIndices.add(createCourseEvent(courseBoardData));
-        eventIndices.add(createCourseEvent(courseBoardData));
-
-        for (EventIndex eventIndex: eventIndices)
+        if (Objects.nonNull(courseBoardData.getCourseStartDate()) && Objects.nonNull(courseBoardData.getCourseEndDate()))
         {
-            createAttendeesForEvent(userBasicProfileList, eventIndex, EventType.COURSE);
+            createCourseEvent(courseBoardData, userBasicProfileList, OccurrenceType.BEGIN);
+            createCourseEvent(courseBoardData, userBasicProfileList, OccurrenceType.END);
+        }
+        else if (Objects.nonNull(courseBoardData.getCourseStartDate()))
+        {
+            createCourseEvent(courseBoardData, userBasicProfileList, OccurrenceType.BEGIN);
+        }
+        else
+        {
+            //TODO: throw new Exception();
         }
     }
 
-    private EventIndex createCourseEvent(CourseBoardData courseBoardData)
+    private EventIndex createCourseEvent(CourseBoardData courseBoardData, Set<Integer> userBasicProfileList, OccurrenceType occurrenceType)
     {
         EventIndex eventIndex = new EventIndex();
         eventIndex.setBoardId(Long.valueOf(courseBoardData.getBoardId()));
         eventIndex.setCourseId(Long.valueOf(courseBoardData.getCourseId()));
         //TODO: Need to change time formats
-        eventIndex.setStartTime(Long.valueOf(courseBoardData.getCourseStartDate()));
-        eventIndex.setEndTime(Long.valueOf(courseBoardData.getCourseEndDate()));
-        eventIndex.setOccurrenceType(Occurrence.START);
+        if (OccurrenceType.BEGIN.equals(occurrenceType))
+        {
+            eventIndex.setStartTime(Long.valueOf(courseBoardData.getCourseStartDate()));
+            eventIndex.setEndTime(Long.valueOf(courseBoardData.getCourseEndDate()));
+            eventIndex.setOccurrenceType(OccurrenceType.BEGIN);
+        }
+        else
+        {
+            eventIndex.setStartTime(Long.valueOf(courseBoardData.getCourseStartDate()));
+            eventIndex.setEndTime(Long.valueOf(courseBoardData.getCourseEndDate()));
+            eventIndex.setOccurrenceType(OccurrenceType.END);
+        }
         eventIndex.setEventType(EventType.COURSE);
         //TODO: Need course title - ask vikas to add (new call to get course info with course id)
         eventIndex.setTitle(String.valueOf(courseBoardData.getCourseId()));
         eventIndex.setEntityReferenceId(Long.valueOf(courseBoardData.getCourseBoardUID()));
         eventIndexJPARepository.save(eventIndex);
+
+        createAttendeesForEvent(userBasicProfileList, eventIndex);
         return eventIndex;
     }
 
-    private void createAttendeesForEvent(List<UserBasicProfile> tempUserBasicProfileList, EventIndex eventIndex, EventType eventType)
+    private void createAttendeesForEvent(Set<Integer> tempUserBasicProfileList, EventIndex eventIndex)
     {
         Long entityId = eventIndex.getEntityId();
 
-        for (UserBasicProfile user : tempUserBasicProfileList)
+        for (Integer user : tempUserBasicProfileList)
         {
             AttendeeIndex attendeeIndex = new AttendeeIndex();
-            attendeeIndex.setAttendee(Long.valueOf(user.getUserId()));
-            attendeeIndex.setEventType(eventType);
+            attendeeIndex.setAttendee(Long.valueOf(user));
+            attendeeIndex.setEventType(eventIndex.getEventType());
             attendeeIndex.setEntityId(entityId);
             attendeeIndex.setStartTime(eventIndex.getStartTime());
             attendeeIndex.setEndTime(eventIndex.getEndTime());
@@ -261,7 +310,7 @@ public class CalendarSaveServiceImpl implements CalendarSaveService
         return courseBoardData;
     }
 
-    private List<UserBasicProfile> getUserBasicProfileList(CourseBoardData courseBoardData)
+    private Set<Integer> getUserBasicProfileList(CourseBoardData courseBoardData)
     {
         List<CourseFacultyMappingData> courseFacultyMappingDataSet = courseBoardData.getCourseFacultyMappingDataSet();
         List<CourseStudentMappingData> courseStudentMappingDataSet = courseBoardData.getCourseStudentMappingDataSet();
@@ -269,17 +318,20 @@ public class CalendarSaveServiceImpl implements CalendarSaveService
         Set<Integer> userIds = courseFacultyMappingDataSet.stream().map(c -> Integer.parseInt(c.getFacultyId())).collect(Collectors.toSet());
         userIds.addAll(courseStudentMappingDataSet.stream().map(c -> Integer.parseInt(c.getStudentId())).collect(Collectors.toSet()));
 
-        GetProfilesResponse getProfilesResponse = UserProfileServiceClient.getProfilesWithUserIds(userIds);
+        //GetProfilesResponse getProfilesResponse = UserProfileServiceClient.getProfilesWithUserIds(userIds);
 
-        return new ArrayList<>(getProfilesResponse.getUserIdProfilesMap().values());
+        return userIds;
     }
 
-    private List<UserBasicProfile> getTempUserBasicProfiles()
+    private Set<Integer> getTempUserBasicProfiles()
     {
         List<UserBasicProfile> tempUserBasicProfileList = new ArrayList<>();
         tempUserBasicProfileList.add(createUser(234543));
         tempUserBasicProfileList.add(createUser(544565));
-        return tempUserBasicProfileList;
+        Set<Integer> userIds = new HashSet<>();
+        userIds.add(234543);
+        userIds.add(544565);
+        return userIds;
     }
 
     private BoardPost getTempBoardPost()

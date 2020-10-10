@@ -1,9 +1,8 @@
 package com.calendar.core.model;
 
 import com.calendar.core.model.enums.EventType;
-import com.calendar.core.model.enums.Occurrence;
+import com.calendar.core.model.enums.OccurrenceType;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.spured.shared.model.post.PostType;
 import org.springframework.data.elasticsearch.annotations.Document;
 
 import javax.persistence.Column;
@@ -40,7 +39,7 @@ public class EventIndex {
     boolean isRecurring;
     Long entityStartTime;
     Long entityEndTime;
-    Occurrence occurrenceType;
+    OccurrenceType occurrenceType;
     String title;
     String text;
     Long hostId;
@@ -132,11 +131,11 @@ public class EventIndex {
         this.entityEndTime = entityEndTime;
     }
 
-    public Occurrence getOccurrenceType() {
+    public OccurrenceType getOccurrenceType() {
         return occurrenceType;
     }
 
-    public void setOccurrenceType(Occurrence occurrenceType) {
+    public void setOccurrenceType(OccurrenceType occurrenceType) {
         this.occurrenceType = occurrenceType;
     }
 
