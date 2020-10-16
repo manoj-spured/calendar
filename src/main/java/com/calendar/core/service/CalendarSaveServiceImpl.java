@@ -31,6 +31,7 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -146,24 +147,30 @@ public class CalendarSaveServiceImpl implements CalendarSaveService
     private void createMeetingEvent(BoardPost postInfo, Set<Integer> userBasicProfileList)
     {
         QuestionGroupResponse questionGroupResponse = postInfo.getQuestionGroupResponse();
-        Timestamp startTime = questionGroupResponse.getStartTime();
-        Timestamp endTime = questionGroupResponse.getStartTime();
+        Timestamp startTimeStamp = questionGroupResponse.getStartTime();
+        Timestamp endTimeStamp = questionGroupResponse.getStartTime();
 
         //TODO: If start is not available make it start time as 00:00 of the creation date
         //TODO: Check if end exists and falls on different days, then create 2 events, If end time is not available then add 30 mins to start time
 
         if (postInfo.getPostType().equals(PostType.MEET))
         {
-            startTime = postInfo.getMeeting().getStartTime();
-            endTime = postInfo.getMeeting().getEndTime();
+            startTimeStamp = postInfo.getMeeting().getStartTime();
+            endTimeStamp = postInfo.getMeeting().getEndTime();
         }
 
-        if (Objects.nonNull(startTime) && Objects.nonNull(endTime))
+        if (Objects.nonNull(startTimeStamp) && Objects.nonNull(endTimeStamp))
         {
-            if (startTime.getTime() - endTime.getTime() > 1)
+            Long startTime = startTimeStamp.getTime();
+            Long endTime = endTimeStamp.getTime();
+
+            if ((startTime - endTime) / (1000*60*60) > 24)
             {
-                createMeetingEvent(postInfo, userBasicProfileList, startTime, endTime, OccurrenceType.BEGIN);
-                createMeetingEvent(postInfo, userBasicProfileList, startTime, endTime, OccurrenceType.END);
+                int eventDuration = 30*60*1000;
+                createMeetingEvent(postInfo, userBasicProfileList, startTime, startTime + eventDuration
+                        , OccurrenceType.BEGIN);
+                createMeetingEvent(postInfo, userBasicProfileList, endTime - eventDuration, endTime
+                        , OccurrenceType.END);
             }
             else
             {
@@ -172,15 +179,23 @@ public class CalendarSaveServiceImpl implements CalendarSaveService
         }
         else
         {
-            createMeetingEvent(postInfo, userBasicProfileList, postInfo.getCreateTime(),null , null);
+            Timestamp postCreatedTimeStamp = postInfo.getCreateTime();
+            Calendar c = Calendar.getInstance();
+            c.setTimeInMillis(postCreatedTimeStamp.getTime());
+            c.set(Calendar.HOUR_OF_DAY, 0);
+            c.set(Calendar.MINUTE, 0);
+            c.set(Calendar.SECOND, 0);
+            c.set(Calendar.MILLISECOND, 0);
+            postCreatedTimeStamp.setTime(c.getTimeInMillis());
+            createMeetingEvent(postInfo, userBasicProfileList, postCreatedTimeStamp.getTime(),null , null);
         }
     }
 
-    private void createMeetingEvent(BoardPost postInfo, Set<Integer> userBasicProfileList, Timestamp startTime, Timestamp endTime, OccurrenceType occurrenceType)
+    private void createMeetingEvent(BoardPost postInfo, Set<Integer> userBasicProfileList, Long startTime, Long endTime, OccurrenceType occurrenceType)
     {
         EventIndex eventIndex = new EventIndex();
-        eventIndex.setStartTime(startTime.getTime());
-        eventIndex.setEndTime(endTime.getTime());
+        eventIndex.setStartTime(startTime);
+        eventIndex.setEndTime(endTime);
         eventIndex.setBoardId(Long.valueOf(postInfo.getBoardId()));
         eventIndex.setCourseId(Long.valueOf(postInfo.getCourseId()));
         //TODO: Check the post type and set the event type accordingly
@@ -232,18 +247,19 @@ public class CalendarSaveServiceImpl implements CalendarSaveService
         eventIndex.setBoardId(Long.valueOf(courseBoardData.getBoardId()));
         eventIndex.setCourseId(Long.valueOf(courseBoardData.getCourseId()));
         //TODO: Need to change time formats
-        if (OccurrenceType.BEGIN.equals(occurrenceType))
+        switch(occurrenceType)
         {
-            eventIndex.setStartTime(Long.valueOf(courseBoardData.getCourseStartDate()));
-            eventIndex.setEndTime(Long.valueOf(courseBoardData.getCourseEndDate()));
-            eventIndex.setOccurrenceType(OccurrenceType.BEGIN);
+            case BEGIN:
+                eventIndex.setOccurrenceType(OccurrenceType.BEGIN);
+                break;
+            case END:
+                eventIndex.setOccurrenceType(OccurrenceType.END);
+                break;
+            default:
+                break;
         }
-        else
-        {
-            eventIndex.setStartTime(Long.valueOf(courseBoardData.getCourseStartDate()));
-            eventIndex.setEndTime(Long.valueOf(courseBoardData.getCourseEndDate()));
-            eventIndex.setOccurrenceType(OccurrenceType.END);
-        }
+        eventIndex.setStartTime(Long.valueOf(courseBoardData.getCourseStartDate()));
+        eventIndex.setEndTime(Long.valueOf(courseBoardData.getCourseEndDate()));
         eventIndex.setEventType(EventType.COURSE);
         //TODO: Need course title - ask vikas to add (new call to get course info with course id)
         eventIndex.setTitle(String.valueOf(courseBoardData.getCourseId()));
