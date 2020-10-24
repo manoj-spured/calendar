@@ -15,7 +15,7 @@ import java.sql.Timestamp;
 @Entity
 @Table(name = "recurring_index")
 @SequenceGenerator(name="seq", initialValue=100000, allocationSize=10)
-public class RecurringIndex {
+public class RecurringIndex extends GenericItem {
 
     private static final long serialVersionUID = 1L;
 

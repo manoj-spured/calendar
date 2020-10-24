@@ -19,7 +19,7 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "attendee_index")
 @SequenceGenerator(name="seq", initialValue=100000, allocationSize=10)
-public class AttendeeIndex {
+public class AttendeeIndex extends GenericItem {
 
     private static final long serialVersionUID = 1L;
 

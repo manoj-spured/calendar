@@ -12,6 +12,7 @@ import com.calendar.core.model.enums.OccurrenceType;
 import com.curriculum.core.data.CourseBoardData;
 import com.curriculum.core.data.CourseBoardProfileRequest;
 import com.curriculum.core.data.CourseFacultyMappingData;
+import com.curriculum.core.data.CourseInfoData;
 import com.curriculum.core.data.CourseStudentMappingData;
 import com.curriculum.core.data.CurriculumRequest;
 import com.curriculum.core.data.CurriculumResponse;
@@ -20,7 +21,9 @@ import com.spured.core.models.post.BoardPost;
 import com.spured.core.models.post.GroupPost;
 import com.spured.core.models.post.question.QuestionGroupResponse;
 import com.spured.core.response.BasePostsResponse;
+import com.spured.core.response.GroupResponse;
 import com.spured.core.service.client.CoreServiceClient;
+import com.spured.groups.service.client.GroupsServiceClient;
 import com.spured.profile.model.UserBasicProfile;
 import com.spured.shared.model.post.PostType;
 import org.apache.commons.collections.CollectionUtils;
@@ -32,6 +35,7 @@ import org.springframework.stereotype.Service;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -90,12 +94,8 @@ public class CalendarSaveServiceImpl implements CalendarSaveService
                     return new ResponseEntity(HttpStatus.NOT_FOUND);
                 }
 
-                //check if board post or group post
-                checkBoardOrGroupPost(courseBoardProfileRequest, postResponse);
-
-                //TODO: Fetch the user and faculty info from course/course-users by passing boardId OR boardId+courseID OR only groupId - 3 different services
-                courseBoardData = getCourseBoardData(courseBoardProfileRequest);
-                userBasicProfileList = getUserBasicProfileList(courseBoardData);
+                //Check if board post or group post and get the Users profile Ids to pass to create event
+                userBasicProfileList = checkBoardOrGroupPost(courseBoardProfileRequest, postResponse);
 
                 //TODO: saveEvent(postInfo, usersInfo)
                 createMeetingEvent(tempBoardPost, tempUserBasicProfileList);
@@ -217,6 +217,7 @@ public class CalendarSaveServiceImpl implements CalendarSaveService
         eventIndex.setTitle(postInfo.getPostTitle());
         eventIndex.setText(postInfo.getPostText());
         eventIndex.setEntityReferenceId(Long.valueOf(postInfo.getPostId()));
+        eventIndex.setCreatedTs(new Date().getTime());
         eventIndexJPARepository.save(eventIndex);
 
         createAttendeesForEvent(userBasicProfileList, eventIndex);
@@ -241,7 +242,7 @@ public class CalendarSaveServiceImpl implements CalendarSaveService
         }
     }
 
-    private EventIndex createCourseEvent(CourseBoardData courseBoardData, Set<Integer> userBasicProfileList, OccurrenceType occurrenceType)
+    private void createCourseEvent(CourseBoardData courseBoardData, Set<Integer> userBasicProfileList, OccurrenceType occurrenceType)
     {
         EventIndex eventIndex = new EventIndex();
         eventIndex.setBoardId(Long.valueOf(courseBoardData.getBoardId()));
@@ -262,12 +263,32 @@ public class CalendarSaveServiceImpl implements CalendarSaveService
         eventIndex.setEndTime(Long.valueOf(courseBoardData.getCourseEndDate()));
         eventIndex.setEventType(EventType.COURSE);
         //TODO: Need course title - ask vikas to add (new call to get course info with course id)
-        eventIndex.setTitle(String.valueOf(courseBoardData.getCourseId()));
+
+        CurriculumResponse curriculumResponse = getCourseTitle(courseBoardData);
+        if (Objects.nonNull(curriculumResponse.getError()))
+        {
+            CourseInfoData courseInfoData = (CourseInfoData) curriculumResponse.getResponseObject();
+            eventIndex.setTitle(courseInfoData.getCourseName());
+        }
+        else
+        {
+            //TODO: Log error
+        }
+
         eventIndex.setEntityReferenceId(Long.valueOf(courseBoardData.getCourseBoardUID()));
+        eventIndex.setCreatedTs(new Date().getTime());
         eventIndexJPARepository.save(eventIndex);
 
         createAttendeesForEvent(userBasicProfileList, eventIndex);
-        return eventIndex;
+    }
+
+    private CurriculumResponse getCourseTitle(CourseBoardData courseBoardData)
+    {
+        CourseBoardProfileRequest courseBoardProfileRequest = new CourseBoardProfileRequest();
+        courseBoardProfileRequest.setCourseId(String.valueOf(courseBoardData.getCourseId()));
+        CurriculumRequest curriculumRequest = new CurriculumRequest();
+        curriculumRequest.setCourseBoardProfileRequest(courseBoardProfileRequest);
+        return CurriculumServiceClient.getNotificationSettings(curriculumRequest);
     }
 
     private void createAttendeesForEvent(Set<Integer> tempUserBasicProfileList, EventIndex eventIndex)
@@ -282,11 +303,12 @@ public class CalendarSaveServiceImpl implements CalendarSaveService
             attendeeIndex.setEntityId(entityId);
             attendeeIndex.setStartTime(eventIndex.getStartTime());
             attendeeIndex.setEndTime(eventIndex.getEndTime());
+            attendeeIndex.setCreatedTs(new Date().getTime());
             attendeeIndexJPARepository.save(attendeeIndex);
         }
     }
 
-    private void checkBoardOrGroupPost(CourseBoardProfileRequest courseBoardProfileRequest, BasePostsResponse postResponse)
+    private Set<Integer> checkBoardOrGroupPost(CourseBoardProfileRequest courseBoardProfileRequest, BasePostsResponse postResponse)
     {
         if (postResponse.getPosts().get(0) instanceof BoardPost)
         {
@@ -297,13 +319,21 @@ public class CalendarSaveServiceImpl implements CalendarSaveService
             //TODO: pass boardId and courseId to get users
             courseBoardProfileRequest.setBoardId(String.valueOf(boardPost.getBoardId()));
             courseBoardProfileRequest.setCourseId(String.valueOf(boardPost.getCourseId()));
+            //TODO: Fetch the user and faculty info from course/course-users by passing boardId OR boardId+courseID OR only groupId - 3 different services
+            return getUserBasicProfileList(getCourseBoardData(courseBoardProfileRequest));
         }
         else if (postResponse.getPosts().get(0) instanceof GroupPost)
         {
             GroupPost groupPost = (GroupPost) postResponse.getPosts().get(0);
-            groupPost.getGroupId();
             //TODO: pass only groupId to get users
+            GroupResponse groupResponse = GroupsServiceClient.getMembersOfGroup(groupPost.getGroupId());
+
+            if (Objects.nonNull(groupResponse) && CollectionUtils.isNotEmpty(groupResponse.getUserProfiles()))
+            {
+                return groupResponse.getUserProfiles().stream().map(UserBasicProfile::getUserId).collect(Collectors.toSet());
+            }
         }
+        return null;
     }
 
     private CourseBoardData getCourseBoardData(CourseBoardProfileRequest courseBoardProfileRequest)

@@ -92,6 +92,11 @@
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
+            <groupId>com.spured.groups.servicGroupsServiceClient e.client</groupId>
+            <artifactId>groups-service-client</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
             <groupId>com.spured.curriculum.service.client</groupId>
             <artifactId>curriculum-service-client</artifactId>
             <version>0.0.1-SNAPSHOT</version>
