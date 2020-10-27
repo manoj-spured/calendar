@@ -17,6 +17,8 @@ import com.curriculum.core.data.CourseStudentMappingData;
 import com.curriculum.core.data.CurriculumRequest;
 import com.curriculum.core.data.CurriculumResponse;
 import com.curriculum.service.client.CurriculumServiceClient;
+import com.spured.boards.service.client.BoardsServiceClient;
+import com.spured.core.models.boards.BoardResponse;
 import com.spured.core.models.post.BoardPost;
 import com.spured.core.models.post.GroupPost;
 import com.spured.core.models.post.question.QuestionGroupResponse;
@@ -26,6 +28,7 @@ import com.spured.core.service.client.CoreServiceClient;
 import com.spured.groups.service.client.GroupsServiceClient;
 import com.spured.profile.model.UserBasicProfile;
 import com.spured.shared.model.post.PostType;
+import com.sun.corba.se.spi.ior.ObjectKey;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -55,7 +58,7 @@ public class CalendarSaveServiceImpl implements CalendarSaveService
     RecurringAttendeeIndexJPARepository recurringAttendeeIndexJPARepository;
 
     @Override
-    public ResponseEntity<HttpStatus> saveCalendarEvent(CalendarSaveRequestDTO calendarSaveRequestDTO)
+    public ResponseEntity<HttpStatus> saveCalendarEvent(CalendarSaveRequestDTO calendarSaveRequestDTO) throws Exception
     {
         Set<Integer> tempUserBasicProfileList = getTempUserBasicProfiles();
 
@@ -144,19 +147,32 @@ public class CalendarSaveServiceImpl implements CalendarSaveService
      * @param postInfo Post related info
      * @param userBasicProfileList Students and Faculty info
      */
-    private void createMeetingEvent(BoardPost postInfo, Set<Integer> userBasicProfileList)
+    private void createMeetingEvent(BoardPost postInfo, Set<Integer> userBasicProfileList) throws Exception
     {
-        QuestionGroupResponse questionGroupResponse = postInfo.getQuestionGroupResponse();
-        Timestamp startTimeStamp = questionGroupResponse.getStartTime();
-        Timestamp endTimeStamp = questionGroupResponse.getStartTime();
+        Timestamp startTimeStamp;
+        Timestamp endTimeStamp;
 
+        QuestionGroupResponse questionGroupResponse = postInfo.getQuestionGroupResponse();
+
+        if (Objects.nonNull(questionGroupResponse));
+        {
+            startTimeStamp = questionGroupResponse.getStartTime();
+            endTimeStamp = questionGroupResponse.getStartTime();
+        }
         //TODO: If start is not available make it start time as 00:00 of the creation date
         //TODO: Check if end exists and falls on different days, then create 2 events, If end time is not available then add 30 mins to start time
 
         if (postInfo.getPostType().equals(PostType.MEET))
         {
-            startTimeStamp = postInfo.getMeeting().getStartTime();
-            endTimeStamp = postInfo.getMeeting().getEndTime();
+            if (Objects.nonNull(postInfo.getMeeting()))
+            {
+                startTimeStamp = postInfo.getMeeting().getStartTime();
+                endTimeStamp = postInfo.getMeeting().getEndTime();
+            }
+            else
+            {
+                throw new Exception("Incorrect meeting details.");
+            }
         }
 
         if (Objects.nonNull(startTimeStamp) && Objects.nonNull(endTimeStamp))
@@ -164,6 +180,7 @@ public class CalendarSaveServiceImpl implements CalendarSaveService
             Long startTime = startTimeStamp.getTime();
             Long endTime = endTimeStamp.getTime();
 
+            //TODO: Check the dates difference instead of times difference to see if they fall on different days
             if ((startTime - endTime) / (1000*60*60) > 24)
             {
                 int eventDuration = 30*60*1000;
@@ -177,6 +194,7 @@ public class CalendarSaveServiceImpl implements CalendarSaveService
                 createMeetingEvent(postInfo, userBasicProfileList, startTime, endTime, null);
             }
         }
+        //TODO: 1 more case - if only start time is available
         else
         {
             Timestamp postCreatedTimeStamp = postInfo.getCreateTime();
@@ -229,6 +247,7 @@ public class CalendarSaveServiceImpl implements CalendarSaveService
         //If only 1 is available create only 1 entry
         if (Objects.nonNull(courseBoardData.getCourseStartDate()) && Objects.nonNull(courseBoardData.getCourseEndDate()))
         {
+            //TODO: Get the date and set time to 00000 and for both events only start date and end dates... no end times... (Full day events).... Just like meeting events
             createCourseEvent(courseBoardData, userBasicProfileList, OccurrenceType.BEGIN);
             createCourseEvent(courseBoardData, userBasicProfileList, OccurrenceType.END);
         }
@@ -236,6 +255,7 @@ public class CalendarSaveServiceImpl implements CalendarSaveService
         {
             createCourseEvent(courseBoardData, userBasicProfileList, OccurrenceType.BEGIN);
         }
+        //TODO: 1 more case - if only end date is available- then create only end entry (no start entry)
         else
         {
             //TODO: throw new Exception();
@@ -315,6 +335,13 @@ public class CalendarSaveServiceImpl implements CalendarSaveService
             BoardPost boardPost = (BoardPost) postResponse.getPosts().get(0);
             boardPost.getBoardId();
             boardPost.getCourseId();
+
+            if (Objects.isNull(boardPost.getCourseId()))
+            {
+                BoardResponse boardResponse = BoardsServiceClient.getUsersInClosedBoard(new HashSet<>(boardPost.getBoardId()),
+                        true,true,false,false);
+                return boardResponse.getUserProfiles().stream().map(UserBasicProfile::getUserId).collect(Collectors.toSet());
+            }
 
             //TODO: pass boardId and courseId to get users
             courseBoardProfileRequest.setBoardId(String.valueOf(boardPost.getBoardId()));

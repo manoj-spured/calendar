@@ -10,5 +10,5 @@ public interface CalendarSaveService
      * @param calendarSaveRequestDTO calendarSaveRequestDTO
      * @return Response
      */
-    ResponseEntity saveCalendarEvent(CalendarSaveRequestDTO calendarSaveRequestDTO);
+    ResponseEntity saveCalendarEvent(CalendarSaveRequestDTO calendarSaveRequestDTO) throws Exception;
 }

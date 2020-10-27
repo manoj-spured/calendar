@@ -8,6 +8,7 @@ import com.calendar.core.model.RecurringAttendeeIndex;
 import com.calendar.core.model.RecurringIndex;
 import com.calendar.core.service.CalendarIndexService;
 import com.calendar.core.service.CalendarSaveService;
+import com.spured.profiles.service.client.UserProfileServiceClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashSet;
 import java.util.List;
 
 @RestController
@@ -30,13 +32,17 @@ public class CalendarIndexController
 
     @PostMapping(value = "/attendeeevent")
     @ResponseBody
-    public List<AttendeeEventDTO> getAttendeeEventData(@RequestBody AttendeeIndex attendee)
+    public List<AttendeeEventDTO> getAttendeeEventData(@RequestBody String token)
     {
-        return calendarIndexService.getAttendeeEventData(attendee.getAttendee(), attendee.getStartTime(), attendee.getEndTime());
+        int profileId = Integer.parseInt(token);
+        Long startTime = Long.valueOf(token);
+        Long endTime = Long.valueOf(token);
+        Integer attendeeId = UserProfileServiceClient.getProfilesWithUserIds(new HashSet<>(profileId)).getUserIdProfilesMap().get(0).getUserId();
+        return calendarIndexService.getAttendeeEventData(Long.valueOf(attendeeId), startTime, endTime);
     }
 
     @PostMapping(value = "/save-calendar-event")
-    public String saveCalendarEvent(@RequestBody CalendarSaveRequestDTO calendarSaveRequestDTO)
+    public String saveCalendarEvent(@RequestBody CalendarSaveRequestDTO calendarSaveRequestDTO) throws Exception
     {
         if (!calendarSaveService.saveCalendarEvent(calendarSaveRequestDTO).getStatusCode().equals(HttpStatus.ACCEPTED))
         {
