@@ -66,10 +66,6 @@ public class CalendarSaveServiceImpl implements CalendarSaveService
         CourseBoardData courseBoardData;
         Set<Integer> userBasicProfileList = new HashSet<>();
 
-        /* no starttime for quiz and assignment -> consider created time
-        they are mandatory for meeting
-        compare start and end time to create separate events - then 2 different entityIds */
-
         switch (calendarSaveRequestDTO.getEventType())
         {
             case ASSIGNMENT:
@@ -84,7 +80,7 @@ public class CalendarSaveServiceImpl implements CalendarSaveService
                     return new ResponseEntity(HttpStatus.BAD_REQUEST);
                 }
 
-                //TODO: Fetch the post info from core/get-post get
+                //Fetch the post info from core/get-post get
                 BasePostsResponse postResponse = CoreServiceClient.getUnifiedPost(calendarSaveRequestDTO.getPostSection()
                         , Math.toIntExact(calendarSaveRequestDTO.getPostId()));
 
@@ -100,7 +96,7 @@ public class CalendarSaveServiceImpl implements CalendarSaveService
                 //Check if board post or group post and get the Users profile Ids to pass to create event
                 userBasicProfileList = checkBoardOrGroupPost(courseBoardProfileRequest, postResponse);
 
-                //TODO: saveEvent(postInfo, usersInfo)
+                //Save Assignment//Quiz/Meeting Event
                 createMeetingEvent(tempBoardPost, tempUserBasicProfileList);
                 break;
 
@@ -111,14 +107,14 @@ public class CalendarSaveServiceImpl implements CalendarSaveService
                     return new ResponseEntity(HttpStatus.BAD_REQUEST);
                 }
 
-                //TODO: Fetch the course info from course/course-info
-                //TODO: Fetch the user and faculty info from course/course-users
+                //Fetch the course info from course/course-info
+                //Fetch the user and faculty info from course/course-users
                 courseBoardProfileRequest.setBoardId(String.valueOf(calendarSaveRequestDTO.getBoardId()));
                 courseBoardProfileRequest.setCourseId(String.valueOf(calendarSaveRequestDTO.getCourseId()));
                 courseBoardData = getCourseBoardData(courseBoardProfileRequest);
                 userBasicProfileList = getUserBasicProfileList(courseBoardData);
 
-                //TODO: saveEvent(postInfo, courseInfo, usersInfo)
+                //Save Course Event
                 createCourseEvent(courseBoardData, tempUserBasicProfileList);
                 break;
 
@@ -129,8 +125,8 @@ public class CalendarSaveServiceImpl implements CalendarSaveService
                 {
                     return new ResponseEntity(HttpStatus.BAD_REQUEST);
                 }
-                //TODO: Fetch the course info from course/course-info
-                //TODO: Fetch the user and faculty info from course/course-users
+                //Fetch the course info from course/course-info
+                //Fetch the user and faculty info from course/course-users
                 courseBoardProfileRequest.setBoardId(String.valueOf(calendarSaveRequestDTO.getBoardId()));
                 courseBoardProfileRequest.setCourseId(String.valueOf(calendarSaveRequestDTO.getCourseId()));
                 courseBoardData = getCourseBoardData(courseBoardProfileRequest);
@@ -159,8 +155,6 @@ public class CalendarSaveServiceImpl implements CalendarSaveService
             startTimeStamp = questionGroupResponse.getStartTime();
             endTimeStamp = questionGroupResponse.getStartTime();
         }
-        //TODO: If start is not available make it start time as 00:00 of the creation date
-        //TODO: Check if end exists and falls on different days, then create 2 events, If end time is not available then add 30 mins to start time
 
         if (postInfo.getPostType().equals(PostType.MEET))
         {
@@ -175,6 +169,7 @@ public class CalendarSaveServiceImpl implements CalendarSaveService
             }
         }
 
+        //Check if end date exists and falls on different days, then create 2 events
         if (Objects.nonNull(startTimeStamp) && Objects.nonNull(endTimeStamp))
         {
             Long startTime = startTimeStamp.getTime();
@@ -194,12 +189,13 @@ public class CalendarSaveServiceImpl implements CalendarSaveService
                 createMeetingEvent(postInfo, userBasicProfileList, startTime, endTime, null);
             }
         }
-        //TODO: 1 more case - if only start time is available
+        //If only start time is available
         else if (Objects.nonNull(startTimeStamp))
         {
             Long startTime = startTimeStamp.getTime();
             createMeetingEvent(postInfo, userBasicProfileList, startTime, null, OccurrenceType.BEGIN);
         }
+        //If start is not available make start time as 00:00 of the creation date
         else
         {
             Timestamp postCreatedTimeStamp = postInfo.getCreateTime();
@@ -221,7 +217,7 @@ public class CalendarSaveServiceImpl implements CalendarSaveService
         eventIndex.setEndTime(endTime);
         eventIndex.setBoardId(Long.valueOf(postInfo.getBoardId()));
         eventIndex.setCourseId(Long.valueOf(postInfo.getCourseId()));
-        //TODO: Check the post type and set the event type accordingly
+        //Check the post type and set the event type accordingly
         switch (postInfo.getPostType())
         {
             case QUIZ:
@@ -248,23 +244,22 @@ public class CalendarSaveServiceImpl implements CalendarSaveService
 
     private void createCourseEvent(CourseBoardData courseBoardData, Set<Integer> userBasicProfileList) throws Exception
     {
-        //TODO: If start and end dates are not available, log and return error as these are mandatory
-        //If only 1 is available create only 1 entry
         if (Objects.nonNull(courseBoardData.getCourseStartDate()) && Objects.nonNull(courseBoardData.getCourseEndDate()))
         {
             //TODO: Get the date and set time to 00000 and for both events only start date and end dates... no end times... (Full day events).... Just like meeting events
             createCourseEvent(courseBoardData, userBasicProfileList, OccurrenceType.BEGIN);
             createCourseEvent(courseBoardData, userBasicProfileList, OccurrenceType.END);
         }
+        //If only 1 is available create only 1 entry
         else if (Objects.nonNull(courseBoardData.getCourseStartDate()))
         {
             createCourseEvent(courseBoardData, userBasicProfileList, OccurrenceType.BEGIN);
         }
-        //TODO: 1 more case - if only end date is available- then create only end entry (no start entry)
         else if (Objects.nonNull(courseBoardData.getCourseEndDate()))
         {
             createCourseEvent(courseBoardData, userBasicProfileList, OccurrenceType.END);
         }
+        //If start and end dates are not available, log and return error as these are mandatory
         else
         {
             //TODO: throw new Exception();
@@ -353,16 +348,15 @@ public class CalendarSaveServiceImpl implements CalendarSaveService
                 return boardResponse.getUserProfiles().stream().map(UserBasicProfile::getUserId).collect(Collectors.toSet());
             }
 
-            //TODO: pass boardId and courseId to get users
+            //Pass boardId and courseId to get users
             courseBoardProfileRequest.setBoardId(String.valueOf(boardPost.getBoardId()));
             courseBoardProfileRequest.setCourseId(String.valueOf(boardPost.getCourseId()));
-            //TODO: Fetch the user and faculty info from course/course-users by passing boardId OR boardId+courseID OR only groupId - 3 different services
             return getUserBasicProfileList(getCourseBoardData(courseBoardProfileRequest));
         }
         else if (postResponse.getPosts().get(0) instanceof GroupPost)
         {
             GroupPost groupPost = (GroupPost) postResponse.getPosts().get(0);
-            //TODO: pass only groupId to get users
+            //Pass only groupId to get users
             GroupResponse groupResponse = GroupsServiceClient.getMembersOfGroup(groupPost.getGroupId());
 
             if (Objects.nonNull(groupResponse) && CollectionUtils.isNotEmpty(groupResponse.getUserProfiles()))
@@ -400,8 +394,6 @@ public class CalendarSaveServiceImpl implements CalendarSaveService
 
         Set<Integer> userIds = courseFacultyMappingDataSet.stream().map(c -> Integer.parseInt(c.getFacultyId())).collect(Collectors.toSet());
         userIds.addAll(courseStudentMappingDataSet.stream().map(c -> Integer.parseInt(c.getStudentId())).collect(Collectors.toSet()));
-
-        //GetProfilesResponse getProfilesResponse = UserProfileServiceClient.getProfilesWithUserIds(userIds);
 
         return userIds;
     }
