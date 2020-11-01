@@ -28,8 +28,8 @@ import com.spured.core.service.client.CoreServiceClient;
 import com.spured.groups.service.client.GroupsServiceClient;
 import com.spured.profile.model.UserBasicProfile;
 import com.spured.shared.model.post.PostType;
-import com.sun.corba.se.spi.ior.ObjectKey;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -181,7 +181,7 @@ public class CalendarSaveServiceImpl implements CalendarSaveService
             Long endTime = endTimeStamp.getTime();
 
             //TODO: Check the dates difference instead of times difference to see if they fall on different days
-            if ((startTime - endTime) / (1000*60*60) > 24)
+            if (!DateUtils.isSameDay(startTimeStamp, endTimeStamp))
             {
                 int eventDuration = 30*60*1000;
                 createMeetingEvent(postInfo, userBasicProfileList, startTime, startTime + eventDuration
@@ -195,6 +195,11 @@ public class CalendarSaveServiceImpl implements CalendarSaveService
             }
         }
         //TODO: 1 more case - if only start time is available
+        else if (Objects.nonNull(startTimeStamp))
+        {
+            Long startTime = startTimeStamp.getTime();
+            createMeetingEvent(postInfo, userBasicProfileList, startTime, null, OccurrenceType.BEGIN);
+        }
         else
         {
             Timestamp postCreatedTimeStamp = postInfo.getCreateTime();
@@ -241,7 +246,7 @@ public class CalendarSaveServiceImpl implements CalendarSaveService
         createAttendeesForEvent(userBasicProfileList, eventIndex);
     }
 
-    private void createCourseEvent(CourseBoardData courseBoardData, Set<Integer> userBasicProfileList)
+    private void createCourseEvent(CourseBoardData courseBoardData, Set<Integer> userBasicProfileList) throws Exception
     {
         //TODO: If start and end dates are not available, log and return error as these are mandatory
         //If only 1 is available create only 1 entry
@@ -256,9 +261,14 @@ public class CalendarSaveServiceImpl implements CalendarSaveService
             createCourseEvent(courseBoardData, userBasicProfileList, OccurrenceType.BEGIN);
         }
         //TODO: 1 more case - if only end date is available- then create only end entry (no start entry)
+        else if (Objects.nonNull(courseBoardData.getCourseEndDate()))
+        {
+            createCourseEvent(courseBoardData, userBasicProfileList, OccurrenceType.END);
+        }
         else
         {
             //TODO: throw new Exception();
+            throw new Exception("Incorrect course details.");
         }
     }
 
